@@ -214,7 +214,7 @@ If you prefer manual control over what's installed:
 
 ```bash
 # Clone the repo
-git clone https://github.com/affaan-m/everything-claude-code.git
+git clone https://github.com/nyashkn/everything-claude-code.git
 
 # Copy agents to your Claude config
 cp everything-claude-code/agents/*.md ~/.claude/agents/
