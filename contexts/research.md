@@ -19,8 +19,8 @@ Focus: Understanding before acting
 ## Tools to favor
 - Read for understanding code
 - Grep, Glob for finding patterns
-- WebSearch, WebFetch for external docs
+- WebSearch, WebFetch, context7, tavily for external docs
 - Task with Explore agent for codebase questions
 
 ## Output
-Findings first, recommendations second
+Findings first, recommendations second, supporting links of resources leveraged last.
