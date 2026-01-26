@@ -8,6 +8,10 @@
 *.pem
 secrets.json
 
+# MCP configs with credentials
+mcp-configs/mcp-servers.with_creds.json
+mcp-configs/*.with_creds.json
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -27,3 +31,4 @@ private/
 
 # Session templates (not committed)
 examples/sessions/*.tmp
+.claude/settings.local.json
