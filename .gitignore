@@ -32,3 +32,22 @@ private/
 # Session templates (not committed)
 examples/sessions/*.tmp
 .claude/settings.local.json
+
+# Per-machine session state (keep in ~/.claude/, not in repo)
+sessions/
+.tmp/
+*.log
+
+# But DO commit learned skills (shared knowledge across machines)
+# skills/learned/ is intentionally tracked
+
+# Continuous Learning v2 - exclude noisy/personal files
+homunculus/observations.jsonl
+homunculus/.observer.pid
+homunculus/observer.log
+homunculus/instincts/personal/
+
+# v2 - commit these (shared knowledge):
+# homunculus/instincts/inherited/
+# homunculus/evolved/
+# homunculus/observations.archive/ (optional)
