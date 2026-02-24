@@ -1,10 +1,9 @@
 {
-  "_note": "Add skills here. Run: node scripts/install-external-skills.js [skill-name]",
   "skills": [
     {
       "name": "playwright-skill",
       "repo": "https://github.com/sickn33/antigravity-awesome-skills",
-      "subdir": "playwright-skill",
+      "subdir": "skills/playwright-skill",
       "setup": "npm run setup",
       "description": "Browser automation runner for Claude agents — server detection, screenshot, video recording"
     },
@@ -14,8 +13,7 @@
       "subdir": ".",
       "setup": null,
       "description": "Remove AI writing patterns — significance inflation, em dashes, filler phrases, sycophantic tone"
-    }
-  ],
+    },
     {
       "name": "typescript-expert",
       "repo": "https://github.com/davila7/claude-code-templates",
