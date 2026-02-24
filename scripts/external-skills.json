@@ -16,11 +16,12 @@
       "description": "Remove AI writing patterns — significance inflation, em dashes, filler phrases, sycophantic tone"
     }
   ],
-  "_pending": [
     {
       "name": "typescript-expert",
-      "requested_repo": "https://github.com/davila7/claude-code-templates",
-      "status": "skill not found in repo — verify correct repo/skill name before adding"
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "subdir": "cli-tool/components/skills/development/typescript-expert",
+      "setup": null,
+      "description": "TypeScript expert patterns, strict tsconfig, utility types cheatsheet, diagnostic script"
     }
   ]
 }
