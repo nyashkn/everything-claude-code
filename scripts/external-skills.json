@@ -14,13 +14,6 @@
       "subdir": ".",
       "setup": null,
       "description": "Remove AI writing patterns — significance inflation, em dashes, filler phrases, sycophantic tone"
-    },
-    {
-      "name": "react-best-practices",
-      "repo": "https://github.com/vercel-labs/agent-skills",
-      "subdir": "skills/react-best-practices",
-      "setup": null,
-      "description": "Vercel React best practices — patterns, rules, component architecture (includes 40+ rule files)"
     }
   ],
   "_pending": [
