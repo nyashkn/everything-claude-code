@@ -1,0 +1,11 @@
+{
+  "skills": [
+    {
+      "name": "playwright-skill",
+      "repo": "https://github.com/sickn33/antigravity-awesome-skills",
+      "subdir": "playwright-skill",
+      "setup": "npm run setup",
+      "description": "Browser automation runner for Claude agents — server detection, screenshot, video recording"
+    }
+  ]
+}
