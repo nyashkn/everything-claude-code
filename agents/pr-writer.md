@@ -160,9 +160,40 @@ mkdir -p .claude/pr-artifacts/{branch-name}
 # Write to: .claude/pr-artifacts/{branch-name}/PR_DESCRIPTION.md
 ```
 
-Report the output path. Offer to open a PR:
-```bash
-gh pr create --title "{derived title}" --body "$(cat .claude/pr-artifacts/{branch}/PR_DESCRIPTION.md)"
+### Phase 6: HUMANIZE
+
+Apply the humanizer skill to the generated description and save a separate polished version.
+
+**Locate humanizer skill** (check in order):
+1. `.claude/skills/humanizer/SKILL.md` (project-level)
+2. `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/humanizer/SKILL.md` (profile/user-level)
+
+If found, read the skill's patterns and apply them to `PR_DESCRIPTION.md`:
+- Remove AI writing patterns (significance inflation, em dashes, boldface headers, filler phrases)
+- Preserve all technical content, code blocks, links, and artifact references exactly
+- Keep the markdown structure intact — only rewrite prose sections
+- **Do not** humanize: code fences, bash commands, file paths, JSON/API samples
+
+Write the result to:
+```
+.claude/pr-artifacts/{branch}/PR_DESCRIPTION_HUMANIZED.md
+```
+
+Add a header note to the humanized file:
+```markdown
+<!-- Humanized version — use this for the actual PR. Original: PR_DESCRIPTION.md -->
+```
+
+If humanizer skill not found, skip silently and note in the output summary.
+
+**Output summary:**
+```
+PR description generated:
+  Raw:       .claude/pr-artifacts/{branch}/PR_DESCRIPTION.md
+  Humanized: .claude/pr-artifacts/{branch}/PR_DESCRIPTION_HUMANIZED.md
+
+To open PR:
+  gh pr create --title "{title}" --body "$(cat .claude/pr-artifacts/{branch}/PR_DESCRIPTION_HUMANIZED.md)"
 ```
 
 ## Notes

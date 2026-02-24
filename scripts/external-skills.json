@@ -1,4 +1,5 @@
 {
+  "_note": "Add skills here. Run: node scripts/install-external-skills.js [skill-name]",
   "skills": [
     {
       "name": "playwright-skill",
@@ -6,6 +7,27 @@
       "subdir": "playwright-skill",
       "setup": "npm run setup",
       "description": "Browser automation runner for Claude agents — server detection, screenshot, video recording"
+    },
+    {
+      "name": "humanizer",
+      "repo": "https://github.com/blader/humanizer",
+      "subdir": ".",
+      "setup": null,
+      "description": "Remove AI writing patterns — significance inflation, em dashes, filler phrases, sycophantic tone"
+    },
+    {
+      "name": "react-best-practices",
+      "repo": "https://github.com/vercel-labs/agent-skills",
+      "subdir": "skills/react-best-practices",
+      "setup": null,
+      "description": "Vercel React best practices — patterns, rules, component architecture (includes 40+ rule files)"
+    }
+  ],
+  "_pending": [
+    {
+      "name": "typescript-expert",
+      "requested_repo": "https://github.com/davila7/claude-code-templates",
+      "status": "skill not found in repo — verify correct repo/skill name before adding"
     }
   ]
 }

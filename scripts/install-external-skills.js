@@ -9,8 +9,10 @@
  *   node scripts/install-external-skills.js           # install all
  *   node scripts/install-external-skills.js --update  # git pull all cached repos
  *   node scripts/install-external-skills.js --list    # show status
+ *   node scripts/install-external-skills.js playwright-skill  # install specific skill
  *
  * Respects CLAUDE_CONFIG_DIR for profile-aware installation.
+ * Respects CLAUDE_PACKAGE_MANAGER for bun/npm/pnpm/yarn setup commands.
  */
 
 const path = require('path');
@@ -26,6 +28,18 @@ const MANIFEST = path.join(__dirname, 'external-skills.json');
 const args = process.argv.slice(2);
 const UPDATE_MODE = args.includes('--update');
 const LIST_MODE = args.includes('--list');
+const SPECIFIC = args.find(a => !a.startsWith('--')); // optional: install only named skill
+
+// Detect package manager: env var → bun → npm fallback
+function detectPM() {
+  if (process.env.CLAUDE_PACKAGE_MANAGER) return process.env.CLAUDE_PACKAGE_MANAGER;
+  try { execSync('bun --version', { stdio: 'ignore' }); return 'bun'; } catch {}
+  return 'npm';
+}
+const PM = detectPM();
+const PMX = PM === 'bun' ? 'bunx' : PM === 'pnpm' ? 'pnpx' : PM === 'yarn' ? 'yarn dlx' : 'npx';
+
+console.log(`Using package manager: ${PM} (exec: ${PMX})`);
 
 function run(cmd, opts = {}) {
   return spawnSync('sh', ['-c', cmd], { stdio: 'inherit', ...opts });
@@ -82,7 +96,13 @@ function main() {
   ensureDir(SKILLS_DIR);
   ensureDir(CACHE_DIR);
 
-  for (const skill of skills) {
+  const toInstall = SPECIFIC ? skills.filter(s => s.name === SPECIFIC) : skills;
+  if (SPECIFIC && toInstall.length === 0) {
+    console.error(`Skill '${SPECIFIC}' not found in manifest.`);
+    process.exit(1);
+  }
+
+  for (const skill of toInstall) {
     console.log(`\n── ${skill.name} ──`);
     console.log(`   ${skill.description}`);
 
@@ -116,8 +136,12 @@ function main() {
 
     // Run setup if present and not already linked
     if (skill.setup && !fs.existsSync(skillLink)) {
-      console.log(`   Running setup: ${skill.setup}`);
-      run(skill.setup, { cwd: skillSource });
+      // Replace "npm" / "npx" in setup command with detected package manager
+      const setupCmd = skill.setup
+        .replace(/\bnpx\b/g, PMX)
+        .replace(/\bnpm run\b/g, `${PM} run`);
+      console.log(`   Running setup: ${setupCmd}`);
+      run(setupCmd, { cwd: skillSource });
     }
 
     // Create symlink
