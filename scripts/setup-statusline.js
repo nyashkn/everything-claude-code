@@ -13,8 +13,8 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const REPO_DIR = path.resolve(__dirname, '..');
-const CLAUDE_DIR = path.join(os.homedir(), '.claude');
+const REPO_DIR = process.env.ECC_ROOT || path.resolve(__dirname, '..');
+const CLAUDE_DIR = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 const settingsPath = path.join(CLAUDE_DIR, 'settings.json');
 const statuslineSourcePath = path.join(REPO_DIR, 'examples', 'statusline.json');
 
