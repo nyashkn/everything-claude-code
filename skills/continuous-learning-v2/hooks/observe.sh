@@ -48,7 +48,21 @@ else
 
   # Fall back to default if not found
   if [ -z "$CONFIG_DIR" ]; then
+    # Use environment variable, fall back to config.json, then default
+if [ -n "$CLAUDE_HOMUNCULUS_DIR" ]; then
+  CONFIG_DIR="$CLAUDE_HOMUNCULUS_DIR"
+else
+  # Try to read from config.json
+  CONFIG_JSON="$(dirname "$0")/../config.json"
+  if [ -f "$CONFIG_JSON" ] && command -v jq &> /dev/null; then
+    CONFIG_DIR=$(jq -r '.observation.store_path // empty' "$CONFIG_JSON" | sed 's|/observations.jsonl$||' | sed "s|^~|$HOME|")
+  fi
+
+  # Fall back to default if not found
+  if [ -z "$CONFIG_DIR" ]; then
     CONFIG_DIR="${HOME}/.claude/homunculus"
+  fi
+fi
   fi
 fi
 OBSERVATIONS_FILE="${CONFIG_DIR}/observations.jsonl"
