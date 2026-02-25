@@ -25,7 +25,7 @@
       "name": "agent-browser",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "subdir": "skills/agent-browser",
-      "setup": "npm install -g agent-browser && agent-browser install",
+      "setup": "bun install -g agent-browser && agent-browser install",
       "description": "AI-first browser automation CLI — snapshot+refs system, Rust daemon (<50ms), multi-session, PDF/diff support, cross-agent"
     }
   ]
