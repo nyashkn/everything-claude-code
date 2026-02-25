@@ -20,6 +20,13 @@
       "subdir": "cli-tool/components/skills/development/typescript-expert",
       "setup": null,
       "description": "TypeScript expert patterns, strict tsconfig, utility types cheatsheet, diagnostic script"
+    },
+    {
+      "name": "agent-browser",
+      "repo": "https://github.com/vercel-labs/agent-browser",
+      "subdir": "skills/agent-browser",
+      "setup": "npm install -g agent-browser && agent-browser install",
+      "description": "AI-first browser automation CLI — snapshot+refs system, Rust daemon (<50ms), multi-session, PDF/diff support, cross-agent"
     }
   ]
 }
