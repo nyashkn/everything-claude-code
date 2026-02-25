@@ -36,33 +36,19 @@
 
 set -e
 
+# Hook phase from CLI argument: "pre" (PreToolUse) or "post" (PostToolUse)
+HOOK_PHASE="${1:-post}"
+
 # Use environment variable, fall back to config.json, then default
 if [ -n "$CLAUDE_HOMUNCULUS_DIR" ]; then
   CONFIG_DIR="$CLAUDE_HOMUNCULUS_DIR"
 else
-  # Try to read from config.json
   CONFIG_JSON="$(dirname "$0")/../config.json"
   if [ -f "$CONFIG_JSON" ] && command -v jq &> /dev/null; then
     CONFIG_DIR=$(jq -r '.observation.store_path // empty' "$CONFIG_JSON" | sed 's|/observations.jsonl$||' | sed "s|^~|$HOME|")
   fi
-
-  # Fall back to default if not found
-  if [ -z "$CONFIG_DIR" ]; then
-    # Use environment variable, fall back to config.json, then default
-if [ -n "$CLAUDE_HOMUNCULUS_DIR" ]; then
-  CONFIG_DIR="$CLAUDE_HOMUNCULUS_DIR"
-else
-  # Try to read from config.json
-  CONFIG_JSON="$(dirname "$0")/../config.json"
-  if [ -f "$CONFIG_JSON" ] && command -v jq &> /dev/null; then
-    CONFIG_DIR=$(jq -r '.observation.store_path // empty' "$CONFIG_JSON" | sed 's|/observations.jsonl$||' | sed "s|^~|$HOME|")
-  fi
-
-  # Fall back to default if not found
   if [ -z "$CONFIG_DIR" ]; then
     CONFIG_DIR="${HOME}/.claude/homunculus"
-  fi
-fi
   fi
 fi
 OBSERVATIONS_FILE="${CONFIG_DIR}/observations.jsonl"
@@ -85,15 +71,22 @@ if [ -z "$INPUT_JSON" ]; then
 fi
 
 # Parse using python via stdin pipe (safe for all JSON payloads)
-PARSED=$(echo "$INPUT_JSON" | python3 -c '
+# Pass HOOK_PHASE via env var since Claude Code does not include hook type in stdin JSON
+PARSED=$(echo "$INPUT_JSON" | HOOK_PHASE="$HOOK_PHASE" python3 -c '
 import json
 import sys
+import os
 
 try:
     data = json.load(sys.stdin)
 
+    # Determine event type from CLI argument passed via env var.
+    # Claude Code does NOT include a "hook_type" field in the stdin JSON,
+    # so we rely on the shell argument ("pre" or "post") instead.
+    hook_phase = os.environ.get("HOOK_PHASE", "post")
+    event = "tool_start" if hook_phase == "pre" else "tool_complete"
+
     # Extract fields - Claude Code hook format
-    hook_type = data.get("hook_type", "unknown")  # PreToolUse or PostToolUse
     tool_name = data.get("tool_name", data.get("tool", "unknown"))
     tool_input = data.get("tool_input", data.get("input", {}))
     tool_output = data.get("tool_output", data.get("output", ""))
@@ -109,9 +102,6 @@ try:
         tool_output_str = json.dumps(tool_output)[:5000]
     else:
         tool_output_str = str(tool_output)[:5000]
-
-    # Determine event type
-    event = "tool_start" if "Pre" in hook_type else "tool_complete"
 
     print(json.dumps({
         "parsed": True,
@@ -165,9 +155,9 @@ observation = {
     'session': parsed['session']
 }
 
-if parsed['input']:
+if parsed['input'] is not None:
     observation['input'] = parsed['input']
-if parsed['output']:
+if parsed['output'] is not None:
     observation['output'] = parsed['output']
 
 print(json.dumps(observation))
