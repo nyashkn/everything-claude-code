@@ -48,7 +48,11 @@ const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
 
 // Read statusline config
 console.log('📖 Reading statusline configuration...');
-const statuslineSource = JSON.parse(fs.readFileSync(statuslineSourcePath, 'utf8'));
+const statuslineRaw    = fs.readFileSync(statuslineSourcePath, 'utf8');
+const pluginRoot       = process.env.CLAUDE_PLUGIN_ROOT || REPO_DIR;
+const substituted      = statuslineRaw.replaceAll('${CLAUDE_PLUGIN_ROOT}', pluginRoot);
+const statuslineSource = JSON.parse(substituted);
+console.log(`   ✅ Replaced \$\{CLAUDE_PLUGIN_ROOT\} with ${pluginRoot}`);
 
 // Check if statusLine already exists
 if (settings.statusLine) {

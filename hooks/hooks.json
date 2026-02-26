@@ -143,6 +143,20 @@
         "description": "Check for console.log in modified files after each response"
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/status_line/advisor.js\"",
+            "async": true,
+            "timeout": 5000
+          }
+        ],
+        "description": "Strategic advisor: analyze prompt context, write insight for status line"
+      }
+    ],
     "SessionEnd": [
       {
         "matcher": "*",
