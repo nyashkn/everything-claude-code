@@ -25,8 +25,15 @@
       "name": "agent-browser",
       "repo": "https://github.com/vercel-labs/agent-browser",
       "subdir": "skills/agent-browser",
-      "setup": "bun install -g agent-browser && agent-browser install",
+      "setup": "npm install -g agent-browser && agent-browser install",
       "description": "AI-first browser automation CLI — snapshot+refs system, Rust daemon (<50ms), multi-session, PDF/diff support, cross-agent"
+    },
+    {
+      "name": "project-scaffolding",
+      "repo": "https://github.com/hmohamed01/Claude-Code-Scaffolding-Skill",
+      "subdir": "project-scaffolding",
+      "setup": null,
+      "description": "IDE-grade project scaffolding wizard — 70+ project types (React, Next.js, FastAPI, Flutter, Go, Rust, Spring Boot, etc.) with interactive framework, DB, testing, and DevOps configuration"
     }
   ]
 }
