@@ -16,6 +16,9 @@ mcp-configs/*.with_creds.json
 .DS_Store
 Thumbs.db
 
+# Backup files created by install scripts
+*.backup-*
+
 # Editor files
 .idea/
 .vscode/
