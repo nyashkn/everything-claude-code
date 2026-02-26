@@ -23,38 +23,12 @@ const { spawnSync } = require('child_process');
 
 const RECENT_TURNS = 5; // conversation turns to include (user+assistant pairs)
 
-// ── Phase 1: Heuristics (fast fallback) ──────────────────────────────────────
-function heuristicInsight({ prompt, remaining, todoTotal, todoDone, sessionGoal, promptCount }) {
-  if (remaining != null) {
-    const used = 100 - remaining;
-    if (used >= 85) return '⚠️ Context critical — /compact now or open a fresh session';
-    if (used >= 70) return 'Context filling — compact after this task to stay sharp';
-  }
-
-  if (sessionGoal && prompt.length > 10) {
-    const goalWords   = new Set(sessionGoal.toLowerCase().split(/\W+/).filter(w => w.length > 4));
-    const promptWords = new Set(prompt.toLowerCase().split(/\W+/).filter(w => w.length > 4));
-    const overlap     = [...goalWords].filter(w => promptWords.has(w)).length;
-    if (goalWords.size > 3 && overlap === 0) {
-      const preview = sessionGoal.slice(0, 60);
-      return `Drifting? Goal: "${preview}${sessionGoal.length > 60 ? '…' : ''}"`;
-    }
-  }
-
-  if (todoTotal > 0) {
-    if (todoDone === todoTotal) return `All ${todoTotal} tasks done — commit and start next milestone`;
-    return `${todoDone}/${todoTotal} done — keep shipping`;
-  }
-
-  const trimmed = prompt.trim();
-  if (trimmed.length > 0 && trimmed.length < 15) {
-    return 'Short prompt — add context: what you tried and what you expect';
-  }
-
-  if (promptCount > 20 && todoTotal === 0) {
-    return 'Long session — use /plan or TodoWrite to track progress';
-  }
-
+// ── Phase 1: Context window warning (structural signal, no LLM needed) ────────
+function ctxWarning(remaining) {
+  if (remaining == null) return null;
+  const used = 100 - remaining;
+  if (used >= 85) return '⚠️ Context critical — /compact now or open a fresh session';
+  if (used >= 70) return 'Context filling — compact after this task to stay sharp';
   return null;
 }
 
@@ -241,11 +215,11 @@ async function main() {
 
   const ctx = { prompt, remaining, todoTotal, todoDone, todos, sessionGoal, promptCount, recentTurns };
 
-  // Phase 1: heuristics — write immediately so status line always has something
-  const heuristic = heuristicInsight(ctx);
-  if (heuristic) writeInsight(advisorDir, sessionId, heuristic);
+  // Phase 1: context window warning — structural signal, write immediately if critical
+  const warning = ctxWarning(remaining);
+  if (warning) writeInsight(advisorDir, sessionId, warning);
 
-  // Phase 2: Gordon LLM — overwrite with richer, context-aware insight
+  // Phase 2: Gordon LLM — full session context, overwrites warning if present
   const gordon = gordonInsight(ctx);
   if (gordon) writeInsight(advisorDir, sessionId, gordon);
 }
