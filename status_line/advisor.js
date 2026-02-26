@@ -2,66 +2,95 @@
 /**
  * ECC Advisor — UserPromptSubmit hook
  *
- * Fires on every prompt submitted in Claude Code.
- * Analyzes prompt + session context heuristically (no LLM, <50ms).
- * Writes strategic insight to $CLAUDE_CONFIG_DIR/status-advisor/{session_id}.json
- * Status line (statusline.js) reads that file on the next render.
+ * Two-phase analysis strategy:
+ *   1. Heuristics (<50ms) — writes insight immediately as guaranteed fallback
+ *   2. LLM via `claude -p` with Gordon tough-love persona — overwrites if response
+ *      arrives before timeout (~3.5s)
  *
- * Runs async (non-blocking) — exits immediately after writing.
- * Never fails — always exits 0.
- *
- * Heuristics inspired by vibe-log-cli's session-context-extractor pattern:
- * - First prompt = session goal (track for drift detection)
- * - Context window health → compact warnings
- * - Todo state → progress tracking
- * - Prompt length → quality hints
+ * Runs async (non-blocking). Never fails — always exits 0.
+ * Status line (statusline.js) reads the written file on next render.
  */
 
 'use strict';
 
-const fs   = require('fs');
-const path = require('path');
-const os   = require('os');
+const fs    = require('fs');
+const path  = require('path');
+const os    = require('os');
+const { spawnSync } = require('child_process');
 
-// ── Heuristic analysis engine ─────────────────────────────────────────────────
-function analyze({ prompt, remaining, todoTotal, todoDone, sessionGoal, promptCount }) {
-  // Priority 1: context window critical — always surface this
+// ── Phase 1: Heuristics (fast fallback) ──────────────────────────────────────
+function heuristicInsight({ prompt, remaining, todoTotal, todoDone, sessionGoal, promptCount }) {
+  // Context window health — always surface this first
   if (remaining != null) {
     const used = 100 - remaining;
     if (used >= 85) return '⚠️ Context critical — /compact now or open a fresh session';
     if (used >= 70) return 'Context filling — compact after this task to stay sharp';
   }
 
-  // Priority 2: session goal drift detection
-  // Compare keywords between original goal and current prompt
+  // Session goal drift detection
   if (sessionGoal && prompt.length > 10) {
     const goalWords   = new Set(sessionGoal.toLowerCase().split(/\W+/).filter(w => w.length > 4));
     const promptWords = new Set(prompt.toLowerCase().split(/\W+/).filter(w => w.length > 4));
     const overlap     = [...goalWords].filter(w => promptWords.has(w)).length;
     if (goalWords.size > 3 && overlap === 0) {
-      const preview = sessionGoal.slice(0, 70);
-      return `Drifting? Original goal: "${preview}${sessionGoal.length > 70 ? '…' : ''}"`;
+      const preview = sessionGoal.slice(0, 60);
+      return `Drifting? Goal: "${preview}${sessionGoal.length > 60 ? '…' : ''}"`;
     }
   }
 
-  // Priority 3: todo progress
+  // Todo progress
   if (todoTotal > 0) {
-    if (todoDone === todoTotal) {
-      return `All ${todoTotal} tasks done — commit your work and start the next milestone`;
-    }
-    return `${todoDone}/${todoTotal} tasks done — keep shipping`;
+    if (todoDone === todoTotal) return `All ${todoTotal} tasks done — commit and start next milestone`;
+    return `${todoDone}/${todoTotal} done — keep shipping`;
   }
 
-  // Priority 4: prompt quality hint (very short = needs more context)
+  // Prompt quality hint
   const trimmed = prompt.trim();
   if (trimmed.length > 0 && trimmed.length < 15) {
     return 'Short prompt — add context: what you tried and what you expect';
   }
 
-  // Priority 5: long session without todo tracking
+  // Long session without tracking
   if (promptCount > 20 && todoTotal === 0) {
     return 'Long session — use /plan or TodoWrite to track progress';
   }
+
+  return null;
+}
+
+// ── Phase 2: Gordon LLM analysis ─────────────────────────────────────────────
+function gordonInsight({ prompt, remaining, todoTotal, todoDone, sessionGoal, promptCount }) {
+  const claudeCli = process.env.CLAUDE_CLI_PATH || '/home/kn/.local/bin/claude';
+  try { if (!fs.existsSync(claudeCli)) return null; } catch (e) { return null; }
+
+  const ctxUsed  = remaining != null ? `${Math.round(100 - remaining)}%` : 'unknown';
+  const context  = [
+    `Context used: ${ctxUsed}`,
+    `Todos: ${todoDone}/${todoTotal} done`,
+    `Prompts this session: ${promptCount}`,
+    sessionGoal
+      ? `Session goal: ${sessionGoal.slice(0, 100)}`
+      : 'No clear session goal',
+    `Current prompt: "${prompt.slice(0, 120)}"`,
+  ].join('\n');
+
+  const gordonPrompt =
+    `You are Gordon, a tough-love coding coach with Gordon Ramsay energy — brutally honest, direct, but genuinely helpful.\n\n` +
+    `Session context:\n${context}\n\n` +
+    `Give ONE sharp insight for this developer. Max 85 characters. ` +
+    `Plain text only. No quotes around the response, no "Gordon:" prefix.`;
+
+  try {
+    const result = spawnSync(
+      claudeCli,
+      ['-p', gordonPrompt, '--model', 'claude-haiku-4-5-20251001', '--max-tokens', '60'],
+      { timeout: 3500, encoding: 'utf8' }
+    );
+    if (result.status === 0 && result.stdout) {
+      const text = result.stdout.trim().replace(/^["']|["']$/g, '').split('\n')[0].trim();
+      if (text.length >= 10 && text.length <= 120) return text;
+    }
+  } catch (e) { /* timeout or unavailable — fall through to heuristic */ }
 
   return null;
 }
@@ -100,7 +129,6 @@ function parseTranscript(transcriptPath) {
 
       promptCount++;
 
-      // First user message = session goal
       if (!sessionGoal) {
         const content = d.message.content;
         if (typeof content === 'string') {
@@ -113,6 +141,14 @@ function parseTranscript(transcriptPath) {
     }
     return { sessionGoal, promptCount };
   } catch (e) { return { sessionGoal: null, promptCount: 0 }; }
+}
+
+// ── Write insight ─────────────────────────────────────────────────────────────
+function writeInsight(advisorDir, sessionId, insight) {
+  const advisorFile = path.join(advisorDir, `${sessionId}.json`);
+  try {
+    fs.writeFileSync(advisorFile, JSON.stringify({ insight, timestamp: Date.now(), sessionId }));
+  } catch (e) { /* non-fatal */ }
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -137,17 +173,18 @@ async function main() {
 
   fs.mkdirSync(advisorDir, { recursive: true });
 
-  const { todoTotal, todoDone }    = readTodoStats(claudeDir, sessionId);
+  const { todoTotal, todoDone }      = readTodoStats(claudeDir, sessionId);
   const { sessionGoal, promptCount } = parseTranscript(transcriptPath);
 
-  const insight = analyze({ prompt, remaining, todoTotal, todoDone, sessionGoal, promptCount });
+  const ctx = { prompt, remaining, todoTotal, todoDone, sessionGoal, promptCount };
 
-  if (insight) {
-    const advisorFile = path.join(advisorDir, `${sessionId}.json`);
-    try {
-      fs.writeFileSync(advisorFile, JSON.stringify({ insight, timestamp: Date.now(), sessionId }));
-    } catch (e) {}
-  }
+  // Phase 1: heuristics — write immediately so status line always has something
+  const heuristic = heuristicInsight(ctx);
+  if (heuristic) writeInsight(advisorDir, sessionId, heuristic);
+
+  // Phase 2: Gordon LLM — overwrite with sharper insight if available
+  const gordon = gordonInsight(ctx);
+  if (gordon) writeInsight(advisorDir, sessionId, gordon);
 }
 
 main().catch(() => {}).finally(() => { process.exitCode = 0; });
