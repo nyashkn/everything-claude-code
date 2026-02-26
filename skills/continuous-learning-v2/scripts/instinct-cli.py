@@ -56,7 +56,27 @@ else:
                     store_path = store_path.replace("~", str(Path.home()))
                     HOMUNCULUS_DIR = Path(store_path).parent
                 else:
+                    # Use environment variable, fall back to config.json, then default
+if "CLAUDE_HOMUNCULUS_DIR" in os.environ:
+    HOMUNCULUS_DIR = Path(os.environ["CLAUDE_HOMUNCULUS_DIR"])
+else:
+    # Try to read from config.json
+    config_path = Path(__file__).parent.parent / "config.json"
+    if config_path.exists():
+        try:
+            with open(config_path) as f:
+                config = json.load(f)
+                store_path = config.get("observation", {}).get("store_path", "")
+                if store_path:
+                    # Extract directory from observations.jsonl path
+                    store_path = store_path.replace("~", str(Path.home()))
+                    HOMUNCULUS_DIR = Path(store_path).parent
+                else:
                     HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
+        except (json.JSONDecodeError, KeyError):
+            HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
+    else:
+        HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
         except (json.JSONDecodeError, KeyError):
             HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
     else:

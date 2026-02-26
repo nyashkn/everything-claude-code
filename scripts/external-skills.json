@@ -27,6 +27,27 @@
       "subdir": "skills/agent-browser",
       "setup": "npm install -g agent-browser && agent-browser install",
       "description": "AI-first browser automation CLI — snapshot+refs system, Rust daemon (<50ms), multi-session, PDF/diff support, cross-agent"
+    },
+    {
+      "name": "ascii-visualizer",
+      "repo": "https://github.com/yonatangross/orchestkit",
+      "subdir": "plugins/ork/skills/ascii-visualizer",
+      "setup": null,
+      "description": "ASCII diagram patterns for architecture, workflows, file trees, and data visualizations — box-drawing layouts, progress bars, swimlanes, blast radius visualizations"
+    },
+    {
+      "name": "fastapi-async-patterns",
+      "repo": "https://github.com/thebushidocollective/han",
+      "subdir": "plugins/frameworks/fastapi/skills/fastapi-async-patterns",
+      "setup": null,
+      "description": "FastAPI async patterns for building high-performance APIs — concurrent requests, async operations, background tasks"
+    },
+    {
+      "name": "find-skills",
+      "repo": "https://github.com/vercel-labs/skills",
+      "subdir": "skills/find-skills",
+      "setup": null,
+      "description": "Helps discover and install agent skills when users ask 'how do I do X' or 'is there a skill for...'"
     }
   ]
 }

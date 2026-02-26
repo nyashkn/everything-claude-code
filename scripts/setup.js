@@ -124,6 +124,28 @@ async function resolveTargetDir() {
   return custom;
 }
 
+// ─── Config file patching ─────────────────────────────────────────────────────
+
+/**
+ * Replace ${ECC_ROOT} placeholder in committed config files with the actual
+ * ECC_ROOT path. Mirrors the ${CLAUDE_PLUGIN_ROOT} substitution done by
+ * merge-hooks.js so config files can be committed with a portable placeholder.
+ */
+function patchConfigFiles() {
+  const configs = [
+    path.join(ECC_ROOT, 'skills', 'continuous-learning', 'config.json'),
+  ];
+
+  for (const configPath of configs) {
+    if (!fs.existsSync(configPath)) continue;
+    const original = fs.readFileSync(configPath, 'utf8');
+    if (!original.includes('${ECC_ROOT}')) continue;
+    const patched = original.replaceAll('${ECC_ROOT}', ECC_ROOT);
+    fs.writeFileSync(configPath, patched, 'utf8');
+    console.log(`  ✅ Patched ECC_ROOT in ${path.relative(ECC_ROOT, configPath)}`);
+  }
+}
+
 // ─── Step: Symlinks ───────────────────────────────────────────────────────────
 
 async function stepSymlinks(claudeDir) {
@@ -132,6 +154,7 @@ async function stepSymlinks(claudeDir) {
   const go = (await ask('  Run? [Y/n] ')).trim().toLowerCase();
   if (go === 'n') return;
   run(path.join(__dirname, 'setup-symlinks.js'), { CLAUDE_CONFIG_DIR: claudeDir });
+  patchConfigFiles();
 }
 
 // ─── Step: Rules ──────────────────────────────────────────────────────────────
