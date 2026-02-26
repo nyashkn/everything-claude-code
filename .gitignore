@@ -51,6 +51,17 @@ sessions/
 .tmp/
 *.log
 
+# External skills — installed at runtime via scripts/install-external-skills.js
+# These are machine-specific symlinks pointing to .skills-cache/; never commit them.
+# The manifest (scripts/external-skills.json) is the source of truth.
+skills/playwright-skill
+skills/humanizer
+skills/typescript-expert
+skills/agent-browser
+skills/ascii-visualizer
+skills/fastapi-async-patterns
+skills/find-skills
+
 # But DO commit learned skills (shared knowledge across machines)
 # skills/learned/ is intentionally tracked
 
