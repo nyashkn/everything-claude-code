@@ -151,7 +151,7 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/status_line/advisor.js\"",
             "async": true,
-            "timeout": 5000
+            "timeout": 15000
           }
         ],
         "description": "Strategic advisor: analyze prompt context, write insight for status line"

@@ -182,11 +182,20 @@ function gordonInsight(ctx) {
     `- If they're on track, tell them what to watch out for next\n` +
     `- If they're drifting, call it out by name`;
 
+  // Strip CLAUDECODE so claude CLI can run inside a Claude Code session
+  const childEnv = { ...process.env };
+  delete childEnv.CLAUDECODE;
+
   try {
     const result = spawnSync(
       claudeCli,
-      ['-p', gordonPrompt, '--model', 'claude-haiku-4-5-20251001', '--max-tokens', '60'],
-      { timeout: 3500, encoding: 'utf8' }
+      ['-p', gordonPrompt, '--model', 'haiku'],
+      {
+        timeout: 8000,
+        encoding: 'utf8',
+        env: childEnv,
+        stdio: ['ignore', 'pipe', 'pipe'], // close stdin so claude doesn't block waiting for it
+      }
     );
     if (result.status === 0 && result.stdout) {
       const text = result.stdout.trim().replace(/^["']|["']$/g, '').split('\n')[0].trim();
