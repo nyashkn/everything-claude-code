@@ -44,6 +44,18 @@
       "description": "Perplexity AI search"
     }
   },
+  "_serena_note": "Serena is project-specific — add it directly to the project's .claude/mcp.json (see below). Do NOT enable globally; it requires --project-dir pointing to the actual codebase.",
+  "_serena_template": {
+    "serena": {
+      "command": "uvx",
+      "args": [
+        "--from", "git+https://github.com/oraios/serena",
+        "serena", "start-mcp-server",
+        "--project-dir", "/absolute/path/to/your/project"
+      ],
+      "description": "Semantic code indexing — symbol lookup, reference finding, ~70% token reduction for large codebases. Run onboarding once: ask Claude to 'onboard this project with Serena'."
+    }
+  },
   "_comments": {
     "setup": "Run 'node scripts/setup-mcp.js' to inject credentials from .env",
     "usage": "Copy servers from mcp-servers.with_creds.json to ~/.claude.json mcpServers section",
