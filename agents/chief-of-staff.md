@@ -51,10 +51,10 @@ Fetch all channels simultaneously:
 
 ```bash
 # Email (via Gmail CLI)
-gog gmail search "is:unread -category:promotions -category:social" --max 20 --json
+gogcli gmail search "is:unread -category:promotions -category:social" --max 20 --json
 
 # Calendar
-gog calendar events --today --all --max 30
+gogcli calendar events --today --all --max 30
 
 # LINE/Messenger via channel-specific scripts
 ```
@@ -146,6 +146,6 @@ claude /schedule-reply "Reply to Sarah about the board meeting"
 ## Prerequisites
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
-- Gmail CLI (e.g., [gog](https://github.com/pterm/gog))
+- Gmail CLI (e.g., [gogcli](https://github.com/steipete/gogcli))
 - Node.js 18+ (for calendar-suggest.js)
 - Optional: Slack MCP server, Matrix bridge (LINE), Chrome + Playwright (Messenger)
