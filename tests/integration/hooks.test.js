@@ -692,10 +692,11 @@ async function runTests() {
 
           const isInline = hook.command.startsWith('node -e');
           const isFilePath = hook.command.startsWith('node "');
+          const isPluginScript = hook.command.startsWith('${CLAUDE_PLUGIN_ROOT}/');
 
           assert.ok(
-            isInline || isFilePath,
-            `Hook command in ${hookType} should be inline (node -e) or file path (node "), got: ${hook.command.substring(0, 50)}`
+            isInline || isFilePath || isPluginScript,
+            `Hook command in ${hookType} should be inline (node -e), file path (node "), or plugin script (\${CLAUDE_PLUGIN_ROOT}/), got: ${hook.command.substring(0, 50)}`
           );
         }
       }
