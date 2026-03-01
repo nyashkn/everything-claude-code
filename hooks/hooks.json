@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/doc-file-check.js\""
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-write-doc-warn.js\""
           }
         ],
         "description": "Doc file warning: warn about non-standard .md/.txt creation (exit code 0; warns only)"
