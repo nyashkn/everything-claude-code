@@ -573,7 +573,9 @@ Once `{kn}-chief-of-staff` is validated:
 
 ## Testing Strategy
 
-**Real data from day 1**, one connector at a time:
+**Real data from day 1**, one connector at a time.
+
+### Phase acceptance criteria
 
 | Phase | Connector | Success criteria |
 |-------|-----------|-----------------|
@@ -586,6 +588,138 @@ Once `{kn}-chief-of-staff` is validated:
 | Phase 5 | `/weekly-review` | Surfaces something I genuinely didn't notice |
 
 Debug any connector standalone: `bun run scripts/ingest/gmail.ts --debug`
+
+---
+
+### Test layers
+
+The system has two distinct parts that need different strategies:
+- **Deterministic pipeline** (gogcli/gh → classify → embed → store → knowledge files) — fully testable
+- **AI conversation** (onboarding, weekly review, drafts) — validated via outputs, not automatable
+
+#### Layer 1 — Unit tests (pure functions, offline)
+
+```
+tests/unit/
+  classify.test.ts          — 4-tier classification logic
+  embed.test.ts             — embedding wrapper (mock OpenRouter)
+  db.test.ts                — memU CRUD (test SQLite in /tmp)
+  ingest/
+    gmail.test.ts           — parse gogcli JSON → classify → shape (fixture input)
+    github.test.ts          — parse gh cli JSON → classify → shape (fixture input)
+  knowledge/
+    relationships.test.ts   — update/append/format round-trip
+    todo.test.ts            — follow-up deadline logic
+    cos-contract.test.ts    — version increment + self-score append
+```
+
+External tool outputs are never called live — recorded once as fixtures and replayed:
+
+```
+tests/fixtures/
+  gmail-inbox.json          — 20 real emails (anonymized) from gogcli
+  gh-notifications.json     — gh api notifications output
+  gh-issues.json            — gh issue list output
+  slack-messages.json       — Slack MCP response shape
+```
+
+#### Layer 2 — Integration tests (full pipeline, no AI)
+
+```
+tests/integration/
+  pipeline.test.ts          — fixture inbox → classify → embed (mocked) → memU → assert
+  retrieval.test.ts         — seed memU with N interactions → query sender → assert top-k
+  knowledge-update.test.ts  — run post-send checklist → assert file diffs
+  hook.test.ts              — PostToolUse hook with mock send → assert checklist enforced
+```
+
+**`pipeline.test.ts`** is the most valuable test in the project:
+```
+Input:  gmail-inbox.json (20 emails)
+Assert: - correct tier distribution (skip / info_only / action_required)
+        - memU has 20 records
+        - relationships.md has entries for action_required senders
+        - todo.md has follow-up deadlines where tier == action_required
+```
+
+**`retrieval.test.ts`** validates the memory layer:
+```
+Seed:   100 interactions over 30 days, 5 senders, known content
+Query:  "investor update" for known sender
+Assert: correct message in top-3, relationship context loaded correctly
+```
+
+#### Layer 3 — Classification regression suite
+
+Most critical for catching drift when changing models or prompts:
+
+```
+tests/classification-regression.test.ts
+
+Dataset: 40-50 curated real messages (anonymized) with known expected tiers:
+  "Thanks, got it"                                      → skip
+  "Can we sync this week?"                              → action_required
+  "FYI the deploy went through"                         → info_only
+  "Waiting on your decision before we can proceed"      → action_required
+
+Assert: >= 90% accuracy against expected tiers
+```
+
+This doubles as a **benchmark** when swapping models — run before and after, compare accuracy.
+
+#### Layer 4 — Knowledge file format tests
+
+Cheap to write, catches silent regressions after prompt changes:
+
+```
+tests/knowledge-format.test.ts
+
+- SOUL.md has required sections: ## Tone, ## Communication style, ## Energy patterns
+- cos-contract.md has: ## The feeling I'm optimising for, ## What I'll measure myself against
+- model-of-me.md has at least 3 bullet-point insights
+- relationships.md entries match expected schema (name, context, last-interaction)
+```
+
+#### Layer 5 — E2E (scriptable portion)
+
+True E2E for `/morning`, `/mail`, `/weekly-review` can't be fully automated (they're Claude
+Code conversations). But the pipeline outputs can be validated:
+
+```bash
+# tests/e2e/morning-pipeline.sh
+# Uses fixture data, real memU, mocked OpenRouter
+
+1. Reset test db (cp /dev/null db/test.sqlite)
+2. Seed gmail fixture: bun run scripts/ingest/gmail.ts --fixture tests/fixtures/gmail-inbox.json
+3. Assert: db has N rows, correct tier distribution
+4. Assert: relationships.md was touched (git diff --name-only)
+5. Assert: todo.md has a new entry
+6. Assert: git log shows a commit
+```
+
+**Golden output tests** (after system is stable for a few weeks):
+- Run command once manually with known fixture data
+- Commit the resulting knowledge file state as golden files
+- Re-run with same fixture → diff against golden → catch regressions
+
+#### What can't be automated
+
+Draft *quality* — whether the tone sounds right, whether the right things get flagged. That's
+validated by using it on real data and noticing when something feels off. The classification
+regression suite is the closest automated equivalent.
+
+---
+
+### Build priority
+
+| Priority | Test | Why |
+|----------|------|-----|
+| 1 | `tests/fixtures/` — record real gogcli/gh outputs | Everything else depends on these |
+| 2 | `classify.test.ts` — 40-message regression suite | Highest value, fastest feedback |
+| 3 | `pipeline.test.ts` — fixture → memU → knowledge files | Validates whole data flow |
+| 4 | `hook.test.ts` — PostToolUse enforcement | Same pattern as ECC hook tests |
+| 5 | Knowledge format tests | Cheap, catches silent regressions |
+| 6 | E2E golden output tests | After system is stable (week 4+) |
 
 ---
 
