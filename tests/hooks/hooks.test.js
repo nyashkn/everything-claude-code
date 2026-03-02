@@ -39,7 +39,7 @@ async function asyncTest(name, fn) {
 // Run a script and capture output
 function runScript(scriptPath, input = '', env = {}) {
   return new Promise((resolve, reject) => {
-    const proc = spawn('node', [scriptPath], {
+    const proc = spawn(process.execPath, [scriptPath], {
       env: { ...process.env, ...env },
       stdio: ['pipe', 'pipe', 'pipe']
     });
@@ -3226,12 +3226,22 @@ async function runTests() {
       console.log('    (skipped — /dev/null not available on Windows)');
       return;
     }
-    // HOME=/dev/null makes ensureDir(learnedSkillsPath) throw ENOTDIR,
-    // which propagates to main().catch — the top-level error boundary
-    const result = await runScript(path.join(scriptsDir, 'evaluate-session.js'), '{}', {
+    // Use a wrapper with ~-based learned_skills_path so HOME=/dev/null causes ENOTDIR.
+    // The real config.json may have an absolute path (which HOME wouldn't affect),
+    // so we supply a test config with "~/.claude/skills/learned" to ensure the
+    // tilde expansion triggers the error when HOME=/dev/null.
+    const testDir = createTestDir();
+    const configPath = path.join(testDir, 'config.json');
+    fs.writeFileSync(configPath, JSON.stringify({
+      min_session_length: 10,
+      learned_skills_path: '~/.claude/skills/learned'
+    }));
+    const wrapperScript = createEvalWrapper(testDir, configPath);
+    const result = await runScript(wrapperScript, '{}', {
       HOME: '/dev/null',
       USERPROFILE: '/dev/null'
     });
+    cleanupTestDir(testDir);
     assert.strictEqual(result.code, 0,
       `Should exit 0 (don't block on errors), got ${result.code}`);
     assert.ok(result.stderr.includes('[ContinuousLearning] Error:'),
