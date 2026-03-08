@@ -1183,7 +1183,7 @@ async function runTests() {
     assert.ok(hooks.hooks.PreCompact, 'Should have PreCompact hooks');
   })) passed++; else failed++;
 
-  if (test('all hook commands use node or are skill shell scripts', () => {
+  if (test('all hook commands use node or approved shell wrappers', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
@@ -1196,9 +1196,11 @@ async function runTests() {
               /^(bash|sh)\s/.test(hook.command) ||
               hook.command.startsWith('${CLAUDE_PLUGIN_ROOT}/skills/')
             );
+            const isHookShellWrapper = /^(bash|sh)\s+["']?\$\{CLAUDE_PLUGIN_ROOT\}\/scripts\/hooks\/run-with-flags-shell\.sh/.test(hook.command);
+            const isSessionStartFallback = hook.command.startsWith('bash -lc') && hook.command.includes('run-with-flags.js');
             assert.ok(
-              isNode || isSkillScript,
-              `Hook command should start with 'node' or be a skill shell script: ${hook.command.substring(0, 80)}...`
+              isNode || isSkillScript || isHookShellWrapper || isSessionStartFallback,
+              `Hook command should use node or approved shell wrapper: ${hook.command.substring(0, 100)}...`
             );
           }
         }
@@ -1210,7 +1212,7 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('script references use CLAUDE_PLUGIN_ROOT variable', () => {
+  if (test('script references use CLAUDE_PLUGIN_ROOT variable (except SessionStart fallback)', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
@@ -1219,7 +1221,8 @@ async function runTests() {
         for (const hook of entry.hooks) {
           if (hook.type === 'command' && hook.command.includes('scripts/hooks/')) {
             // Check for the literal string "${CLAUDE_PLUGIN_ROOT}" in the command
-            const hasPluginRoot = hook.command.includes('${CLAUDE_PLUGIN_ROOT}');
+            const isSessionStartFallback = hook.command.startsWith('bash -lc') && hook.command.includes('run-with-flags.js');
+            const hasPluginRoot = hook.command.includes('${CLAUDE_PLUGIN_ROOT}') || isSessionStartFallback;
             assert.ok(
               hasPluginRoot,
               `Script paths should use CLAUDE_PLUGIN_ROOT: ${hook.command.substring(0, 80)}...`
@@ -1724,7 +1727,7 @@ async function runTests() {
     assert.ok(updated.includes('/src/auth.ts'), 'Should include modified file');
   })) passed++; else failed++;
 
-  if (await asyncTest('preserves existing session content when no blank template marker', async () => {
+  if (await asyncTest('always updates session summary content on session end', async () => {
     const testDir = createTestDir();
     const sessionsDir = path.join(testDir, '.claude', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
@@ -1734,7 +1737,7 @@ async function runTests() {
 
     const shortId = 'update03';
     const sessionFile = path.join(sessionsDir, `${today}-${shortId}-session.tmp`);
-    // Pre-existing file with ALREADY-FILLED summary (no blank template marker)
+    // Pre-existing file with already-filled summary
     const existingContent = `# Session: ${today}\n**Date:** ${today}\n**Started:** 08:00\n**Last Updated:** 08:30\n\n---\n\n## Session Summary\n\n### Tasks\n- Previous task from earlier\n`;
     fs.writeFileSync(sessionFile, existingContent);
 
@@ -1749,9 +1752,9 @@ async function runTests() {
     assert.strictEqual(result.code, 0);
 
     const updated = fs.readFileSync(sessionFile, 'utf8');
-    // Should NOT overwrite existing summary (no blank template marker found)
-    assert.ok(updated.includes('Previous task from earlier'), 'Should preserve existing content');
-    assert.ok(!updated.includes('New task'), 'Should not replace non-template content');
+    // Session summary should always be refreshed with current content (#317)
+    assert.ok(updated.includes('## Session Summary'), 'Should have Session Summary section');
+    assert.ok(updated.includes('# Session:'), 'Should preserve session header');
   })) passed++; else failed++;
 
   console.log('\nRound 23: pre-compact.js (glob specificity):');

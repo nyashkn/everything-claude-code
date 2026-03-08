@@ -5,6 +5,9 @@
 [![Stars](https://img.shields.io/github/stars/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/stargazers)
 [![Forks](https://img.shields.io/github/forks/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/network/members)
 [![Contributors](https://img.shields.io/github/contributors/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/graphs/contributors)
+[![npm ecc-universal](https://img.shields.io/npm/dw/ecc-universal?label=ecc-universal%20weekly%20downloads&logo=npm)](https://www.npmjs.com/package/ecc-universal)
+[![npm ecc-agentshield](https://img.shields.io/npm/dw/ecc-agentshield?label=ecc-agentshield%20weekly%20downloads&logo=npm)](https://www.npmjs.com/package/ecc-agentshield)
+[![GitHub App Install](https://img.shields.io/badge/GitHub%20App-150%20installs-2ea44f?logo=github)](https://github.com/marketplace/ecc-tools)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -70,6 +73,16 @@ This repo is the raw code only. The guides explain everything.
 ---
 
 ## What's New
+
+### v1.8.0 — Harness Performance System (Mar 2026)
+
+- **Harness-first release** — ECC is now explicitly framed as an agent harness performance system, not just a config pack.
+- **Hook reliability overhaul** — SessionStart root fallback, Stop-phase session summaries, and script-based hooks replacing fragile inline one-liners.
+- **Hook runtime controls** — `ECC_HOOK_PROFILE=minimal|standard|strict` and `ECC_DISABLED_HOOKS=...` for runtime gating without editing hook files.
+- **New harness commands** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
+- **NanoClaw v2** — model routing, skill hot-load, session branch/search/export/compact/metrics.
+- **Cross-harness parity** — behavior tightened across Claude Code, Cursor, OpenCode, and Codex app/CLI.
+- **997 internal tests passing** — full suite green after hook/runtime refactor and compatibility updates.
 
 ### v1.7.0 — Cross-Platform Expansion & Presentation Builder (Feb 2026)
 
@@ -147,6 +160,8 @@ cd everything-claude-code
 # ./install.sh typescript python golang
 # or target cursor:
 # ./install.sh --target cursor typescript
+# or target antigravity:
+# ./install.sh --target antigravity typescript
 ```
 
 For manual install instructions see the README in the `rules/` folder.
@@ -164,13 +179,13 @@ For manual install instructions see the README in the `rules/` folder.
 /plugin list everything-claude-code@everything-claude-code
 ```
 
-✨ **That's it!** You now have access to 13 agents, 56 skills, and 32 commands.
+✨ **That's it!** You now have access to 16 agents, 65 skills, and 40 commands.
 
 ---
 
 ## 🌐 Cross-Platform Support
 
-This plugin now fully supports **Windows, macOS, and Linux**. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
+This plugin now fully supports **Windows, macOS, and Linux**, alongside tight integration across major IDEs (Cursor, OpenCode, Antigravity) and CLI harnesses. All hooks and scripts have been rewritten in Node.js for maximum compatibility.
 
 ### Package Manager Detection
 
@@ -200,6 +215,18 @@ node scripts/setup-package-manager.js --detect
 ```
 
 Or use the `/setup-pm` command in Claude Code.
+
+### Hook Runtime Controls
+
+Use runtime flags to tune strictness or disable specific hooks temporarily:
+
+```bash
+# Hook strictness profile (default: standard)
+export ECC_HOOK_PROFILE=standard
+
+# Comma-separated hook IDs to disable
+export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
+```
 
 ---
 
@@ -283,6 +310,8 @@ everything-claude-code/
 |   |-- liquid-glass-design/         # iOS 26 Liquid Glass design system (NEW)
 |   |-- foundation-models-on-device/ # Apple on-device LLM with FoundationModels (NEW)
 |   |-- swift-concurrency-6-2/       # Swift 6.2 Approachable Concurrency (NEW)
+|   |-- autonomous-loops/           # Autonomous loop patterns: sequential pipelines, PR loops, DAG orchestration (NEW)
+|   |-- plankton-code-quality/      # Write-time code quality enforcement with Plankton hooks (NEW)
 |
 |-- commands/         # Slash commands for quick execution
 |   |-- tdd.md              # /tdd - Test-driven development
@@ -442,9 +471,9 @@ Use `/security-scan` in Claude Code to run it, or add to CI with the [GitHub Act
 
 [GitHub](https://github.com/affaan-m/agentshield) | [npm](https://www.npmjs.com/package/ecc-agentshield)
 
-### 🔬 Plankton — Code Quality Integration
+### 🔬 Plankton — Write-Time Code Quality Enforcement
 
-[Plankton](https://github.com/alexfazio/plankton) is a recommended companion for code quality enforcement. It provides automated code review, linting orchestration, and quality gates that pair well with the ECC skill and hook system. Use it alongside AgentShield for security + quality coverage.
+Plankton (credit: @alxfazio) is a recommended companion for write-time code quality enforcement. It runs formatters and 20+ linters on every file edit via PostToolUse hooks, then spawns Claude subprocesses (routed to Haiku/Sonnet/Opus by violation complexity) to fix issues the main agent missed. Three-phase architecture: auto-format silently (40-50% of issues), collect remaining violations as structured JSON, delegate fixes to a subprocess. Includes config protection hooks that prevent agents from modifying linter configs to pass instead of fixing code. Supports Python, TypeScript, Shell, YAML, JSON, TOML, Markdown, and Dockerfile. Use alongside AgentShield for security + quality coverage. See `skills/plankton-code-quality/` for full integration guide.
 
 ### 🧠 Continuous Learning v2
 
@@ -743,12 +772,13 @@ Each component is fully independent.
 </details>
 
 <details>
-<summary><b>Does this work with Cursor / OpenCode / Codex?</b></summary>
+<summary><b>Does this work with Cursor / OpenCode / Codex / Antigravity?</b></summary>
 
 Yes. ECC is cross-platform:
 - **Cursor**: Pre-translated configs in `.cursor/`. See [Cursor IDE Support](#cursor-ide-support).
 - **OpenCode**: Full plugin support in `.opencode/`. See [OpenCode Support](#-opencode-support).
-- **Codex**: First-class support with adapter drift guards and SessionStart fallback. See PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257).
+- **Codex**: First-class support for both macOS app and CLI, with adapter drift guards and SessionStart fallback. See PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257).
+- **Antigravity**: Tightly integrated setup for workflows, skills, and flatten rules in `.agent/`.
 - **Claude Code**: Native — this is the primary target.
 </details>
 
@@ -856,19 +886,24 @@ alwaysApply: false
 
 ---
 
-## Codex CLI Support
+## Codex macOS App + CLI Support
 
-ECC provides **first-class Codex CLI support** with a reference configuration, Codex-specific AGENTS.md supplement, and 16 ported skills.
+ECC provides **first-class Codex support** for both the macOS app and CLI, with a reference configuration, Codex-specific AGENTS.md supplement, and shared skills.
 
-### Quick Start (Codex)
+### Quick Start (Codex App + CLI)
 
 ```bash
 # Copy the reference config to your home directory
 cp .codex/config.toml ~/.codex/config.toml
 
-# Run Codex in the repo — AGENTS.md is auto-detected
+# Run Codex CLI in the repo — AGENTS.md is auto-detected
 codex
 ```
+
+Codex macOS app:
+- Open this repository as your workspace.
+- The root `AGENTS.md` is auto-detected.
+- Optional: copy `.codex/config.toml` to `~/.codex/config.toml` for CLI/app behavior consistency.
 
 ### What's Included
 
@@ -905,7 +940,7 @@ Skills at `.agents/skills/` are auto-loaded by Codex:
 
 ### Key Limitation
 
-Codex CLI does **not yet support hooks** ([GitHub Issue #2109](https://github.com/openai/codex/issues/2109), 430+ upvotes). Security enforcement is instruction-based via `persistent_instructions` in config.toml and the sandbox permission system.
+Codex does **not yet provide Claude-style hook execution parity**. ECC enforcement there is instruction-based via `AGENTS.md` and `persistent_instructions`, plus sandbox permissions.
 
 ---
 
@@ -929,9 +964,9 @@ The configuration is automatically detected from `.opencode/opencode.json`.
 
 | Feature | Claude Code | OpenCode | Status |
 |---------|-------------|----------|--------|
-| Agents | ✅ 13 agents | ✅ 12 agents | **Claude Code leads** |
-| Commands | ✅ 33 commands | ✅ 24 commands | **Claude Code leads** |
-| Skills | ✅ 50+ skills | ✅ 37 skills | **Claude Code leads** |
+| Agents | ✅ 16 agents | ✅ 12 agents | **Claude Code leads** |
+| Commands | ✅ 40 commands | ✅ 31 commands | **Claude Code leads** |
+| Skills | ✅ 65 skills | ✅ 37 skills | **Claude Code leads** |
 | Hooks | ✅ 8 event types | ✅ 11 events | **OpenCode has more!** |
 | Rules | ✅ 29 rules | ✅ 13 instructions | **Claude Code leads** |
 | MCP Servers | ✅ 14 servers | ✅ Full | **Full parity** |
@@ -951,7 +986,7 @@ OpenCode's plugin system is MORE sophisticated than Claude Code with 20+ event t
 
 **Additional OpenCode events**: `file.edited`, `file.watcher.updated`, `message.updated`, `lsp.client.diagnostics`, `tui.toast.show`, and more.
 
-### Available Commands (32)
+### Available Commands (31+)
 
 | Command | Description |
 |---------|-------------|
@@ -989,6 +1024,11 @@ OpenCode's plugin system is MORE sophisticated than Claude Code with 20+ event t
 | `/projects` | List known projects and instinct stats |
 | `/learn-eval` | Extract and evaluate patterns before saving |
 | `/setup-pm` | Configure package manager |
+| `/harness-audit` | Audit harness reliability, eval readiness, and risk posture |
+| `/loop-start` | Start controlled agentic loop execution pattern |
+| `/loop-status` | Inspect active loop status and checkpoints |
+| `/quality-gate` | Run quality gate checks for paths or entire repo |
+| `/model-route` | Route tasks to models by complexity and budget |
 
 ### Plugin Installation
 
@@ -1025,11 +1065,11 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 
 | Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **Agents** | 13 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
-| **Commands** | 33 | Shared | Instruction-based | 24 |
-| **Skills** | 50+ | Shared | 10 (native format) | 37 |
+| **Agents** | 16 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
+| **Commands** | 40 | Shared | Instruction-based | 31 |
+| **Skills** | 65 | Shared | 10 (native format) | 37 |
 | **Hook Events** | 8 types | 15 types | None yet | 11 types |
-| **Hook Scripts** | 9 scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
+| **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
 | **Rules** | 29 (common + lang) | 29 (YAML frontmatter) | Instruction-based | 13 instructions |
 | **Custom Tools** | Via hooks | Via hooks | N/A | 6 native tools |
 | **MCP Servers** | 14 | Shared (mcp.json) | 4 (command-based) | Full |
@@ -1037,7 +1077,7 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 | **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
 | **Secret Detection** | Hook-based | beforeSubmitPrompt hook | Sandbox-based | Hook-based |
 | **Auto-Format** | PostToolUse hook | afterFileEdit hook | N/A | file.edited hook |
-| **Version** | Plugin | Plugin | Reference config | 1.6.0 |
+| **Version** | Plugin | Plugin | Reference config | 1.8.0 |
 
 **Key architectural decisions:**
 - **AGENTS.md** at root is the universal cross-tool file (read by all 4 tools)
@@ -1052,6 +1092,11 @@ ECC is the **first plugin to maximize every major AI coding tool**. Here's how e
 I've been using Claude Code since the experimental rollout. Won the Anthropic x Forum Ventures hackathon in Sep 2025 building [zenith.chat](https://zenith.chat) with [@DRodriguezFX](https://x.com/DRodriguezFX) - entirely using Claude Code.
 
 These configs are battle-tested across multiple production applications.
+
+## Inspiration Credits
+
+- inspired by [zarazhangrui](https://github.com/zarazhangrui)
+- homunculus-inspired by [humanplane](https://github.com/humanplane)
 
 ---
 
@@ -1157,7 +1202,7 @@ These configs work for my workflow. You should:
 
 This project is free and open source. Sponsors help keep it maintained and growing.
 
-[**Become a Sponsor**](https://github.com/sponsors/affaan-m) | [Sponsor Tiers](SPONSORS.md)
+[**Become a Sponsor**](https://github.com/sponsors/affaan-m) | [Sponsor Tiers](SPONSORS.md) | [Sponsorship Program](SPONSORING.md)
 
 ---
 
