@@ -74,7 +74,13 @@ if (fs.existsSync(configPath)) {
 
   process.stdout.write('  learned_skills_path '.padEnd(25));
 
-  if (config.learned_skills_path === expectedPath) {
+  // Resolve ${ECC_ROOT} placeholder — ECC_ROOT is 2 dirs above the config file
+  const eccRoot = path.resolve(path.dirname(configPath), '..', '..');
+  const resolvedPath = (config.learned_skills_path || '')
+    .replace(/^~/, os.homedir())
+    .replace('${ECC_ROOT}', eccRoot);
+
+  if (resolvedPath === expectedPath) {
     console.log('✅ Points to repo');
   } else {
     console.log(`⚠️  ${config.learned_skills_path}`);
