@@ -1,7 +1,7 @@
 ---
 name: smelly-comments
 description: Reviews code comments for quality issues, redundancy, and AI artifacts when explicitly requested. Works with git diff or PR branches.
-tools: Read, Grep, Glob, Bash
+tools: ["Read", "Grep", "Glob", "Bash"]
 model: haiku
 ---
 

@@ -2,7 +2,7 @@
 name: pr-writer
 model: sonnet
 description: Generates PR descriptions for feature/fix branches by analyzing code changes, extracting test scenarios, and capturing visual/API demos via playwright-skill.
-tools: Bash, Read, Grep, Glob, Write
+tools: ["Bash", "Read", "Grep", "Glob", "Write"]
 ---
 
 # PR Writer Agent
