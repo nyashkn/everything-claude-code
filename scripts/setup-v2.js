@@ -60,144 +60,125 @@ for (const dir of gitkeepDirs) {
 }
 console.log('');
 
-// 3. Update config.json paths
+// 3. Update config.json paths (v2.0 only — v2.1+ hardcodes ~/.claude/homunculus)
 console.log('[Updating config.json]');
 const configPath = path.join(REPO_DIR, 'skills/continuous-learning-v2/config.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 const homunculus = path.join(REPO_DIR, 'homunculus');
-config.observation.store_path = path.join(homunculus, 'observations.jsonl');
-config.instincts.personal_path = path.join(homunculus, 'instincts/personal') + '/';
-config.instincts.inherited_path = path.join(homunculus, 'instincts/inherited') + '/';
-config.evolution.evolved_path = path.join(homunculus, 'evolved') + '/';
 
-if (!isDryRun) {
-  // Backup original
-  const backupPath = configPath + '.backup-' + Date.now();
-  fs.copyFileSync(configPath, backupPath);
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
-  console.log(`  ✅ Updated config.json`);
-  console.log(`  📦 Backup: ${path.basename(backupPath)}`);
+if (config.observation && config.instincts && config.evolution) {
+  config.observation.store_path = path.join(homunculus, 'observations.jsonl');
+  config.instincts.personal_path = path.join(homunculus, 'instincts/personal') + '/';
+  config.instincts.inherited_path = path.join(homunculus, 'instincts/inherited') + '/';
+  config.evolution.evolved_path = path.join(homunculus, 'evolved') + '/';
+
+  if (!isDryRun) {
+    const backupPath = configPath + '.backup-' + Date.now();
+    fs.copyFileSync(configPath, backupPath);
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
+    console.log(`  ✅ Updated config.json`);
+    console.log(`  📦 Backup: ${path.basename(backupPath)}`);
+  } else {
+    console.log(`  ✅ Would update config.json (dry run)`);
+  }
 } else {
-  console.log(`  ✅ Would update config.json (dry run)`);
+  console.log(`  ℹ️  config.json v${config.version || '2.1+'} — paths hardcoded in scripts, no patch needed`);
 }
 console.log('');
 
-// 4. Modify hooks/observe.sh
+// 4. Modify hooks/observe.sh (skip if already has env var support)
 console.log('[Modifying hooks/observe.sh]');
 const observePath = path.join(REPO_DIR, 'skills/continuous-learning-v2/hooks/observe.sh');
 let observeContent = fs.readFileSync(observePath, 'utf8');
 
-const observeReplacement = `# Use environment variable, fall back to config.json, then default
+if (observeContent.includes('CLAUDE_HOMUNCULUS_DIR')) {
+  console.log(`  ℹ️  observe.sh already has CLAUDE_HOMUNCULUS_DIR support — skipping`);
+} else {
+  const observeReplacement = `# Use environment variable, fall back to default
 if [ -n "$CLAUDE_HOMUNCULUS_DIR" ]; then
   CONFIG_DIR="$CLAUDE_HOMUNCULUS_DIR"
 else
-  # Try to read from config.json
-  CONFIG_JSON="$(dirname "$0")/../config.json"
-  if [ -f "$CONFIG_JSON" ] && command -v jq &> /dev/null; then
-    CONFIG_DIR=$(jq -r '.observation.store_path // empty' "$CONFIG_JSON" | sed 's|/observations.jsonl$||' | sed "s|^~|$HOME|")
-  fi
-
-  # Fall back to default if not found
-  if [ -z "$CONFIG_DIR" ]; then
-    CONFIG_DIR="\${HOME}/.claude/homunculus"
-  fi
+  CONFIG_DIR="\${HOME}/.claude/homunculus"
 fi`;
 
-observeContent = observeContent.replace(
-  /CONFIG_DIR="\$\{HOME\}\/.claude\/homunculus"/,
-  observeReplacement
-);
+  observeContent = observeContent.replace(
+    /CONFIG_DIR="\$\{HOME\}\/.claude\/homunculus"/,
+    observeReplacement
+  );
 
-if (!isDryRun) {
-  const backupPath = observePath + '.backup-' + Date.now();
-  fs.copyFileSync(observePath, backupPath);
-  fs.writeFileSync(observePath, observeContent);
-  console.log(`  ✅ Modified observe.sh`);
-  console.log(`  📦 Backup: ${path.basename(backupPath)}`);
-} else {
-  console.log(`  ✅ Would modify observe.sh (dry run)`);
+  if (!isDryRun) {
+    const backupPath = observePath + '.backup-' + Date.now();
+    fs.copyFileSync(observePath, backupPath);
+    fs.writeFileSync(observePath, observeContent);
+    console.log(`  ✅ Modified observe.sh`);
+    console.log(`  📦 Backup: ${path.basename(backupPath)}`);
+  } else {
+    console.log(`  ✅ Would modify observe.sh (dry run)`);
+  }
 }
 console.log('');
 
-// 5. Modify scripts/instinct-cli.py
+// 5. Modify scripts/instinct-cli.py (skip if already has env var support)
 console.log('[Modifying scripts/instinct-cli.py]');
 const cliPath = path.join(REPO_DIR, 'skills/continuous-learning-v2/scripts/instinct-cli.py');
 let cliContent = fs.readFileSync(cliPath, 'utf8');
 
-const cliReplacement = `# Use environment variable, fall back to config.json, then default
+if (cliContent.includes('CLAUDE_HOMUNCULUS_DIR')) {
+  console.log(`  ℹ️  instinct-cli.py already has CLAUDE_HOMUNCULUS_DIR support — skipping`);
+} else {
+  const cliReplacement = `# Use environment variable, fall back to default
 if "CLAUDE_HOMUNCULUS_DIR" in os.environ:
     HOMUNCULUS_DIR = Path(os.environ["CLAUDE_HOMUNCULUS_DIR"])
 else:
-    # Try to read from config.json
-    config_path = Path(__file__).parent.parent / "config.json"
-    if config_path.exists():
-        try:
-            with open(config_path) as f:
-                config = json.load(f)
-                store_path = config.get("observation", {}).get("store_path", "")
-                if store_path:
-                    # Extract directory from observations.jsonl path
-                    store_path = store_path.replace("~", str(Path.home()))
-                    HOMUNCULUS_DIR = Path(store_path).parent
-                else:
-                    HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
-        except (json.JSONDecodeError, KeyError):
-            HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
-    else:
-        HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"`;
+    HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"`;
 
-cliContent = cliContent.replace(
-  /HOMUNCULUS_DIR = Path\.home\(\) \/ "\.claude" \/ "homunculus"/,
-  cliReplacement
-);
+  cliContent = cliContent.replace(
+    /HOMUNCULUS_DIR = Path\.home\(\) \/ "\.claude" \/ "homunculus"/,
+    cliReplacement
+  );
 
-if (!isDryRun) {
-  const backupPath = cliPath + '.backup-' + Date.now();
-  fs.copyFileSync(cliPath, backupPath);
-  fs.writeFileSync(cliPath, cliContent);
-  console.log(`  ✅ Modified instinct-cli.py`);
-  console.log(`  📦 Backup: ${path.basename(backupPath)}`);
-} else {
-  console.log(`  ✅ Would modify instinct-cli.py (dry run)`);
+  if (!isDryRun) {
+    const backupPath = cliPath + '.backup-' + Date.now();
+    fs.copyFileSync(cliPath, backupPath);
+    fs.writeFileSync(cliPath, cliContent);
+    console.log(`  ✅ Modified instinct-cli.py`);
+    console.log(`  📦 Backup: ${path.basename(backupPath)}`);
+  } else {
+    console.log(`  ✅ Would modify instinct-cli.py (dry run)`);
+  }
 }
 console.log('');
 
-// 6. Modify agents/start-observer.sh
+// 6. Modify agents/start-observer.sh (skip if already has env var support)
 console.log('[Modifying agents/start-observer.sh]');
 const startObserverPath = path.join(REPO_DIR, 'skills/continuous-learning-v2/agents/start-observer.sh');
 let startObserverContent = fs.readFileSync(startObserverPath, 'utf8');
 
-const startObserverReplacement = `# Use environment variable, fall back to config.json, then default
+if (startObserverContent.includes('CLAUDE_HOMUNCULUS_DIR')) {
+  console.log(`  ℹ️  start-observer.sh already has CLAUDE_HOMUNCULUS_DIR support — skipping`);
+} else {
+  const startObserverReplacement = `# Use environment variable, fall back to default
 if [ -n "$CLAUDE_HOMUNCULUS_DIR" ]; then
   CONFIG_DIR="$CLAUDE_HOMUNCULUS_DIR"
 else
-  # Try to read from config.json
-  SCRIPT_DIR="$(cd "$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
-  CONFIG_JSON="$SCRIPT_DIR/../config.json"
-  if [ -f "$CONFIG_JSON" ] && command -v jq &> /dev/null; then
-    CONFIG_DIR=$(jq -r '.observation.store_path // empty' "$CONFIG_JSON" | sed 's|/observations.jsonl$||' | sed "s|^~|$HOME|")
-  fi
-
-  # Fall back to default if not found
-  if [ -z "$CONFIG_DIR" ]; then
-    CONFIG_DIR="\${HOME}/.claude/homunculus"
-  fi
+  CONFIG_DIR="\${HOME}/.claude/homunculus"
 fi`;
 
-startObserverContent = startObserverContent.replace(
-  /CONFIG_DIR="\$\{HOME\}\/.claude\/homunculus"/,
-  startObserverReplacement
-);
+  startObserverContent = startObserverContent.replace(
+    /CONFIG_DIR="\$\{HOME\}\/.claude\/homunculus"/,
+    startObserverReplacement
+  );
 
-if (!isDryRun) {
-  const backupPath = startObserverPath + '.backup-' + Date.now();
-  fs.copyFileSync(startObserverPath, backupPath);
-  fs.writeFileSync(startObserverPath, startObserverContent);
-  console.log(`  ✅ Modified start-observer.sh`);
-  console.log(`  📦 Backup: ${path.basename(backupPath)}`);
-} else {
-  console.log(`  ✅ Would modify start-observer.sh (dry run)`);
+  if (!isDryRun) {
+    const backupPath = startObserverPath + '.backup-' + Date.now();
+    fs.copyFileSync(startObserverPath, backupPath);
+    fs.writeFileSync(startObserverPath, startObserverContent);
+    console.log(`  ✅ Modified start-observer.sh`);
+    console.log(`  📦 Backup: ${path.basename(backupPath)}`);
+  } else {
+    console.log(`  ✅ Would modify start-observer.sh (dry run)`);
+  }
 }
 console.log('');
 
