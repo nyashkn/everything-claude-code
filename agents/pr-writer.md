@@ -67,7 +67,7 @@ node -e "require('$SKILL_DIR/lib/helpers').detectDevServers().then(s => console.
 Write a script to `/tmp/pr-capture-{branch}.js`:
 ```javascript
 const { chromium } = require('playwright');
-const ARTIFACTS = '.claude/pr-artifacts/{branch}';
+const ARTIFACTS = process.env.ARTIFACT_DIR; // set by Phase 5 shell: $ARTIFACT_DIR
 const VIEWPORT = { width: 1440, height: 900 };
 
 (async () => {
@@ -93,7 +93,7 @@ node "$SKILL_DIR/run.js" /tmp/pr-capture-{branch}.js
 Write a recording script to `/tmp/pr-record-{branch}.js`:
 ```javascript
 const { chromium } = require('playwright');
-const ARTIFACTS = '.claude/pr-artifacts/{branch}';
+const ARTIFACTS = process.env.ARTIFACT_DIR; // set by Phase 5 shell: $ARTIFACT_DIR
 const VIEWPORT = { width: 1440, height: 900 };
 
 (async () => {
@@ -125,7 +125,7 @@ node "$SKILL_DIR/run.js" /tmp/pr-record-{branch}.js
 ```bash
 # Capture success + error responses
 curl -s "{detected_url}/api/v1/{endpoint}" | jq '.' \
-  > .claude/pr-artifacts/{branch}/api-samples/{endpoint}-success.json
+  > .claude/agent_artifacts/pr-writer/{datetime}_{branch}/api-samples/{endpoint}-success.json
 ```
 
 ### Phase 4: GENERATE
@@ -147,17 +147,21 @@ Embed artifacts:
 <details>
 <summary>Demo</summary>
 
-![Feature](.claude/pr-artifacts/{branch}/screenshots/feature-main.png)
+![Feature](.claude/agent_artifacts/pr-writer/{datetime}_{branch}/screenshots/feature-main.png)
 
-**Recording**: `.claude/pr-artifacts/{branch}/recordings/`
+**Recording**: `.claude/agent_artifacts/pr-writer/{datetime}_{branch}/recordings/`
 </details>
 ```
 
 ### Phase 5: OUTPUT
 
+Compute the output directory name before writing:
 ```bash
-mkdir -p .claude/pr-artifacts/{branch-name}
-# Write to: .claude/pr-artifacts/{branch-name}/PR_DESCRIPTION.md
+DATETIME=$(date +%Y%m%d_%H%M%S)
+BRANCH=$(git branch --show-current | tr '/' '-')
+ARTIFACT_DIR=".claude/agent_artifacts/pr-writer/${DATETIME}_${BRANCH}"
+mkdir -p "$ARTIFACT_DIR"
+# Write to: $ARTIFACT_DIR/PR_DESCRIPTION.md
 ```
 
 ### Phase 6: HUMANIZE
@@ -176,7 +180,7 @@ If found, read the skill's patterns and apply them to `PR_DESCRIPTION.md`:
 
 Write the result to:
 ```
-.claude/pr-artifacts/{branch}/PR_DESCRIPTION_HUMANIZED.md
+.claude/agent_artifacts/pr-writer/{datetime}_{branch}/PR_DESCRIPTION_HUMANIZED.md
 ```
 
 Add a header note to the humanized file:
@@ -189,11 +193,11 @@ If humanizer skill not found, skip silently and note in the output summary.
 **Output summary:**
 ```
 PR description generated:
-  Raw:       .claude/pr-artifacts/{branch}/PR_DESCRIPTION.md
-  Humanized: .claude/pr-artifacts/{branch}/PR_DESCRIPTION_HUMANIZED.md
+  Raw:       .claude/agent_artifacts/pr-writer/{datetime}_{branch}/PR_DESCRIPTION.md
+  Humanized: .claude/agent_artifacts/pr-writer/{datetime}_{branch}/PR_DESCRIPTION_HUMANIZED.md
 
 To open PR:
-  gh pr create --title "{title}" --body "$(cat .claude/pr-artifacts/{branch}/PR_DESCRIPTION_HUMANIZED.md)"
+  gh pr create --title "{title}" --body "$(cat .claude/agent_artifacts/pr-writer/{datetime}_{branch}/PR_DESCRIPTION_HUMANIZED.md)"
 ```
 
 ## Notes
