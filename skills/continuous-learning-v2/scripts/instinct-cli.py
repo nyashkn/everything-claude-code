@@ -31,7 +31,11 @@ from typing import Optional
 # Configuration
 # ─────────────────────────────────────────────
 
-HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
+# Use environment variable, fall back to default
+if "CLAUDE_HOMUNCULUS_DIR" in os.environ:
+    HOMUNCULUS_DIR = Path(os.environ["CLAUDE_HOMUNCULUS_DIR"])
+else:
+    HOMUNCULUS_DIR = Path.home() / ".claude" / "homunculus"
 PROJECTS_DIR = HOMUNCULUS_DIR / "projects"
 REGISTRY_FILE = HOMUNCULUS_DIR / "projects.json"
 

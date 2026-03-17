@@ -68,8 +68,11 @@ async function main() {
       minSessionLength = config.min_session_length ?? 10;
 
       if (config.learned_skills_path) {
-        // Handle ~ in path
-        learnedSkillsPath = config.learned_skills_path.replace(/^~/, require('os').homedir());
+        // Resolve ~ and ${ECC_ROOT} — ECC_ROOT is 2 dirs above the config file
+        const eccRoot = path.resolve(path.dirname(configFile), '..', '..');
+        learnedSkillsPath = config.learned_skills_path
+          .replace(/^~/, require('os').homedir())
+          .replace('${ECC_ROOT}', eccRoot);
       }
     } catch (err) {
       log(`[ContinuousLearning] Failed to parse config: ${err.message}, using defaults`);

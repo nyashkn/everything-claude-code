@@ -35,7 +35,12 @@ PYTHON_CMD="${CLV2_PYTHON_CMD:-}"
 # Configuration
 # ─────────────────────────────────────────────
 
-CONFIG_DIR="${HOME}/.claude/homunculus"
+# Use environment variable, fall back to default
+if [ -n "$CLAUDE_HOMUNCULUS_DIR" ]; then
+  CONFIG_DIR="$CLAUDE_HOMUNCULUS_DIR"
+else
+  CONFIG_DIR="${HOME}/.claude/homunculus"
+fi
 CONFIG_FILE="${SKILL_ROOT}/config.json"
 # PID file is project-scoped so each project can have its own observer
 PID_FILE="${PROJECT_DIR}/.observer.pid"

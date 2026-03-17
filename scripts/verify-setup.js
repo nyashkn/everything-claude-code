@@ -156,28 +156,35 @@ const v2ConfigPath = path.join(REPO_DIR, 'skills/continuous-learning-v2/config.j
 
 if (fs.existsSync(v2ConfigPath)) {
   const v2Config = JSON.parse(fs.readFileSync(v2ConfigPath, 'utf8'));
-  const expectedHomunculus = path.join(REPO_DIR, 'homunculus');
+  const configVersion = v2Config.version || '2.0';
 
-  const v2Paths = {
-    'observation.store_path': v2Config.observation?.store_path,
-    'instincts.personal_path': v2Config.instincts?.personal_path,
-    'instincts.inherited_path': v2Config.instincts?.inherited_path,
-    'evolution.evolved_path': v2Config.evolution?.evolved_path
-  };
+  // v2.1+ hardcodes ~/.claude/homunculus — no path config needed
+  if (configVersion.startsWith('2.1') || configVersion >= '2.1') {
+    console.log(`  ✅ config.json v${configVersion} — observer-based config, paths hardcoded in scripts`);
+    console.log(`  ✅ observer.enabled: ${v2Config.observer?.enabled ?? false}`);
+  } else {
+    // v2.0: check explicit path keys
+    const expectedHomunculus = path.join(REPO_DIR, 'homunculus');
+    const v2Paths = {
+      'observation.store_path': v2Config.observation?.store_path,
+      'instincts.personal_path': v2Config.instincts?.personal_path,
+      'instincts.inherited_path': v2Config.instincts?.inherited_path,
+      'evolution.evolved_path': v2Config.evolution?.evolved_path
+    };
 
-  let v2PathsCorrect = 0;
-  for (const [key, value] of Object.entries(v2Paths)) {
-    if (value && value.includes(expectedHomunculus)) {
-      console.log(`  ✅ ${key} points to repo`);
-      v2PathsCorrect++;
-    } else {
-      console.log(`  ⚠️  ${key}: ${value || 'not set'}`);
-      warnings.push(`${key} should point to ${expectedHomunculus}`);
+    let v2PathsCorrect = 0;
+    for (const [key, value] of Object.entries(v2Paths)) {
+      if (value && value.includes(expectedHomunculus)) {
+        console.log(`  ✅ ${key} points to repo`);
+        v2PathsCorrect++;
+      } else {
+        console.log(`  ⚠️  ${key}: ${value || 'not set'}`);
+        warnings.push(`${key} should point to ${expectedHomunculus}`);
+      }
     }
-  }
-
-  if (v2PathsCorrect === 0) {
-    warnings.push('v2 config not updated - run: node scripts/setup-v2.js');
+    if (v2PathsCorrect === 0) {
+      warnings.push('v2 config not updated - run: node scripts/setup-v2.js');
+    }
   }
 } else {
   console.log('  ⚠️  v2 config.json not found');
