@@ -1,4 +1,4 @@
-**语言：** [English](../../README.md) | [繁體中文](../zh-TW/README.md) | [简体中文](README.md)
+**语言：** English | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md)
 
 # Everything Claude Code
 
@@ -14,9 +14,10 @@
 ![Python](https://img.shields.io/badge/-Python-3776AB?logo=python\&logoColor=white)
 ![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go\&logoColor=white)
 ![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk\&logoColor=white)
+![Perl](https://img.shields.io/badge/-Perl-39457E?logo=perl\&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown\&logoColor=white)
 
-> **5万+ stars** | **6千+ forks** | **30位贡献者** | **支持6种语言** | **Anthropic黑客马拉松获胜者**
+> **50K+ stars** | **6K+ forks** | **30 contributors** | **5 languages supported** | **Anthropic Hackathon Winner**
 
 ***
 
@@ -24,7 +25,7 @@
 
 **🌐 语言 / 语言 / 語言**
 
-[**English**](../../README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md)
+[**English**](../../README.md) | [简体中文](../../README.zh-CN.md) | [繁體中文](../zh-TW/README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md)
 
 </div>
 
@@ -38,24 +39,6 @@
 
 ***
 
-## 采用与分发
-
-向赞助商、平台或生态系统合作伙伴展示 ECC 时，请使用这些实时信号：
-
-* **主包安装量：** npm 上的 [`ecc-universal`](https://www.npmjs.com/package/ecc-universal)
-* **安全伴侣安装量：** npm 上的 [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield)
-* **GitHub 应用分发：** [ECC 工具市场列表](https://github.com/marketplace/ecc-tools)
-* **自动化月度指标问题：** 由 `.github/workflows/monthly-metrics.yml` 驱动
-* **仓库采用信号：** 本 README 顶部的 stars/forks/contributors 徽章
-
-Claude Code 插件安装的下载计数目前尚未作为公共 API 公开。对于合作伙伴报告，请将 npm 指标与 GitHub 应用安装量以及仓库流量/分支增长相结合。
-
-有关赞助商通话的指标清单和命令片段，请参阅 [`docs/business/metrics-and-sponsorship.md`](../business/metrics-and-sponsorship.md)。
-
-[**赞助 ECC**](https://github.com/sponsors/affaan-m) | [赞助层级](SPONSORS.md) | [赞助计划](SPONSORING.md)
-
-***
-
 ## 指南
 
 此仓库仅包含原始代码。指南解释了一切。
@@ -64,18 +47,18 @@ Claude Code 插件安装的下载计数目前尚未作为公共 API 公开。对
 <tr>
 <td width="50%">
 <a href="https://x.com/affaanmustafa/status/2012378465664745795">
-<img src="https://github.com/user-attachments/assets/1a471488-59cc-425b-8345-5245c7efbcef" alt="The Shorthand Guide to Everything Claude Code" />
+<img src="https://github.com/user-attachments/assets/1a471488-59cc-425b-8345-5245c7efbcef" alt="Claude Code 的速记指南/>
 </a>
 </td>
 <td width="50%">
 <a href="https://x.com/affaanmustafa/status/2014040193557471352">
-<img src="https://github.com/user-attachments/assets/c9ca43bc-b149-427f-b551-af6840c368f0" alt="The Longform Guide to Everything Claude Code" />
+<img src="https://github.com/user-attachments/assets/c9ca43bc-b149-427f-b551-af6840c368f0" alt="Claude Code 的详细指南" />
 </a>
 </td>
 </tr>
 <tr>
-<td align="center"><b>Shorthand Guide</b><br/>Setup, foundations, philosophy. <b>Read this first.</b></td>
-<td align="center"><b>Longform Guide</b><br/>Token optimization, memory persistence, evals, parallelization.</td>
+<td align="center"><b>Shorthand Guide</b><br/>设置、基础、理念。 <b>先阅读此部分。</b></td>
+<td align="center"><b>详细指南</b><br/>令牌优化、记忆持久化、评估、并行化。</td>
 </tr>
 </table>
 
@@ -173,9 +156,9 @@ git clone https://github.com/affaan-m/everything-claude-code.git
 cd everything-claude-code
 
 # Recommended: use the installer (handles common + language rules safely)
-./install.sh typescript    # or python or golang
+./install.sh typescript    # or python or golang or swift or php
 # You can pass multiple languages:
-# ./install.sh typescript python golang
+# ./install.sh typescript python golang swift php
 # or target cursor:
 # ./install.sh --target cursor typescript
 # or target antigravity:
@@ -258,137 +241,143 @@ everything-claude-code/
 |   |-- plugin.json         # 插件元数据和组件路径
 |   |-- marketplace.json    # 用于 /plugin marketplace add 的市场目录
 |
-|-- agents/           # 用于委派任务的专用子代理
+|-- agents/           # 用于委托任务的专用子代理
 |   |-- planner.md           # 功能实现规划
-|   |-- architect.md         # 系统设计决策
+|   |-- architect.md         # 系统架构设计决策
 |   |-- tdd-guide.md         # 测试驱动开发
-|   |-- code-reviewer.md     # 质量和安全审查
+|   |-- code-reviewer.md     # 质量与安全代码审查
 |   |-- security-reviewer.md # 漏洞分析
 |   |-- build-error-resolver.md
-|   |-- e2e-runner.md        # Playwright E2E 测试
+|   |-- e2e-runner.md        # Playwright 端到端测试
 |   |-- refactor-cleaner.md  # 无用代码清理
 |   |-- doc-updater.md       # 文档同步
 |   |-- go-reviewer.md       # Go 代码审查
 |   |-- go-build-resolver.md # Go 构建错误修复
-|   |-- python-reviewer.md   # Python 代码审查 (新增)
-|   |-- database-reviewer.md # 数据库 / Supabase 审查 (新增)
+|   |-- python-reviewer.md   # Python 代码审查（新增）
+|   |-- database-reviewer.md # 数据库/Supabase 审查（新增）
 |
-|-- skills/           # 工作流定义和领域知识
-|   |-- coding-standards/           # 各语言最佳实践
-|   |-- clickhouse-io/              # ClickHouse 分析、查询和数据工程
-|   |-- backend-patterns/           # API、数据库、缓存模式
+|-- skills/           # 工作流定义与领域知识
+|   |-- coding-standards/           # 语言最佳实践
+|   |-- clickhouse-io/              # ClickHouse 分析、查询与数据工程
+|   |-- backend-patterns/           # API、数据库与缓存模式
 |   |-- frontend-patterns/          # React、Next.js 模式
-|   |-- frontend-slides/            # HTML 幻灯片和 PPTX 转 Web 演示流程 (新增)
-|   |-- article-writing/            # 使用指定风格进行长文写作，避免通用 AI 语气 (新增)
-|   |-- content-engine/             # 多平台内容生成与复用工作流 (新增)
-|   |-- market-research/            # 带来源引用的市场、竞品和投资研究 (新增)
-|   |-- investor-materials/         # 融资演示文稿、单页、备忘录和财务模型 (新增)
-|   |-- investor-outreach/          # 个性化融资外联与跟进 (新增)
-|   |-- continuous-learning/        # 从会话中自动提取模式 (Longform Guide)
+|   |-- frontend-slides/            # HTML 幻灯片和 PPTX 转 Web 演示工作流（新增）
+|   |-- article-writing/            # 按指定写作风格撰写长文而不使用通用 AI 语气（新增）
+|   |-- content-engine/             # 多平台内容生成与内容复用工作流（新增）
+|   |-- market-research/            # 带来源引用的市场、竞品与投资人研究（新增）
+|   |-- investor-materials/         # 融资演示文稿、单页材料、备忘录与财务模型（新增）
+|   |-- investor-outreach/          # 个性化融资沟通与跟进（新增）
+|   |-- continuous-learning/        # 从会话中自动提取模式（长文指南）
 |   |-- continuous-learning-v2/     # 基于直觉的学习与置信度评分
-|   |-- iterative-retrieval/        # 子代理的渐进式上下文优化
-|   |-- strategic-compact/          # 手动压缩建议 (Longform Guide)
+|   |-- iterative-retrieval/        # 子代理渐进式上下文优化
+|   |-- strategic-compact/          # 手动压缩建议（长文指南）
 |   |-- tdd-workflow/               # TDD 方法论
 |   |-- security-review/            # 安全检查清单
-|   |-- eval-harness/               # 验证循环评估 (Longform Guide)
-|   |-- verification-loop/          # 持续验证 (Longform Guide)
-|   |-- golang-patterns/            # Go 语言惯用法和最佳实践
-|   |-- golang-testing/             # Go 测试模式、TDD、基准测试
-|   |-- cpp-coding-standards/         # 来自 C++ Core Guidelines 的 C++ 编码规范 (新增)
-|   |-- cpp-testing/                # 使用 GoogleTest、CMake/CTest 的 C++ 测试 (新增)
-|   |-- django-patterns/            # Django 模式、模型和视图 (新增)
-|   |-- django-security/            # Django 安全最佳实践 (新增)
-|   |-- django-tdd/                 # Django TDD 工作流 (新增)
-|   |-- django-verification/        # Django 验证循环 (新增)
-|   |-- python-patterns/            # Python 惯用法和最佳实践 (新增)
-|   |-- python-testing/             # 使用 pytest 的 Python 测试 (新增)
-|   |-- springboot-patterns/        # Java Spring Boot 模式 (新增)
-|   |-- springboot-security/        # Spring Boot 安全 (新增)
-|   |-- springboot-tdd/             # Spring Boot TDD (新增)
-|   |-- springboot-verification/    # Spring Boot 验证流程 (新增)
-|   |-- configure-ecc/              # 交互式安装向导 (新增)
-|   |-- security-scan/              # AgentShield 安全审计集成 (新增)
-|   |-- java-coding-standards/     # Java 编码规范 (新增)
-|   |-- jpa-patterns/              # JPA/Hibernate 模式 (新增)
-|   |-- postgres-patterns/         # PostgreSQL 优化模式 (新增)
-|   |-- nutrient-document-processing/ # 使用 Nutrient API 进行文档处理 (新增)
+|   |-- eval-harness/               # 验证循环评估（长文指南）
+|   |-- verification-loop/          # 持续验证（长文指南）
+|   |-- videodb/                   # 视频和音频：导入、搜索、编辑、生成与流式处理（新增）
+|   |-- golang-patterns/            # Go 习惯用法与最佳实践
+|   |-- golang-testing/             # Go 测试模式、TDD 与基准测试
+|   |-- cpp-coding-standards/         # 来自 C++ Core Guidelines 的 C++ 编码规范（新增）
+|   |-- cpp-testing/                # 使用 GoogleTest 与 CMake/CTest 的 C++ 测试（新增）
+|   |-- django-patterns/            # Django 模式、模型与视图（新增）
+|   |-- django-security/            # Django 安全最佳实践（新增）
+|   |-- django-tdd/                 # Django TDD 工作流（新增）
+|   |-- django-verification/        # Django 验证循环（新增）
+|   |-- python-patterns/            # Python 习惯用法与最佳实践（新增）
+|   |-- python-testing/             # 使用 pytest 的 Python 测试（新增）
+|   |-- springboot-patterns/        # Java Spring Boot 模式（新增）
+|   |-- springboot-security/        # Spring Boot 安全（新增）
+|   |-- springboot-tdd/             # Spring Boot TDD（新增）
+|   |-- springboot-verification/    # Spring Boot 验证（新增）
+|   |-- configure-ecc/              # 交互式安装向导（新增）
+|   |-- security-scan/              # AgentShield 安全审计集成（新增）
+|   |-- java-coding-standards/     # Java 编码规范（新增）
+|   |-- jpa-patterns/              # JPA/Hibernate 模式（新增）
+|   |-- postgres-patterns/         # PostgreSQL 优化模式（新增）
+|   |-- nutrient-document-processing/ # 使用 Nutrient API 的文档处理（新增）
 |   |-- project-guidelines-example/   # 项目专用技能模板
-|   |-- database-migrations/         # 数据库迁移模式 (Prisma、Drizzle、Django、Go) (新增)
-|   |-- api-design/                  # REST API 设计、分页和错误响应 (新增)
-|   |-- deployment-patterns/         # CI/CD、Docker、健康检查和回滚 (新增)
-|   |-- docker-patterns/            # Docker Compose、网络、卷和容器安全 (新增)
-|   |-- e2e-testing/                 # Playwright E2E 模式和 Page Object Model (新增)
-|   |-- content-hash-cache-pattern/  # 使用 SHA-256 内容哈希进行文件处理缓存 (新增)
-|   |-- cost-aware-llm-pipeline/     # LLM 成本优化、模型路由和预算跟踪 (新增)
-|   |-- regex-vs-llm-structured-text/ # 文本解析决策框架：正则 vs LLM (新增)
-|   |-- swift-actor-persistence/     # 使用 Actor 的线程安全 Swift 数据持久化 (新增)
-|   |-- swift-protocol-di-testing/   # 基于 Protocol 的依赖注入用于可测试 Swift 代码 (新增)
-|   |-- search-first/               # 先研究再编码的工作流 (新增)
-|   |-- skill-stocktake/            # 审计技能和命令质量 (新增)
-|   |-- liquid-glass-design/         # iOS 26 Liquid Glass 设计系统 (新增)
-|   |-- foundation-models-on-device/ # Apple 设备端 LLM FoundationModels (新增)
-|   |-- swift-concurrency-6-2/       # Swift 6.2 易用并发模型 (新增)
-|   |-- autonomous-loops/           # 自动化循环模式：顺序流水线、PR 循环、DAG 编排 (新增)
-|   |-- plankton-code-quality/      # 使用 Plankton hooks 在编写阶段执行代码质量检查 (新增)
+|   |-- database-migrations/         # 迁移模式（Prisma、Drizzle、Django、Go）（新增）
+|   |-- api-design/                  # REST API 设计、分页与错误响应（新增）
+|   |-- deployment-patterns/         # CI/CD、Docker、健康检查与回滚（新增）
+|   |-- docker-patterns/            # Docker Compose、网络、卷与容器安全（新增）
+|   |-- e2e-testing/                 # Playwright 端到端模式与页面对象模型（新增）
+|   |-- content-hash-cache-pattern/  # 文件处理中的 SHA-256 内容哈希缓存模式（新增）
+|   |-- cost-aware-llm-pipeline/     # LLM 成本优化、模型路由与预算追踪（新增）
+|   |-- regex-vs-llm-structured-text/ # 文本解析决策框架：regex vs LLM（新增）
+|   |-- swift-actor-persistence/     # 使用 Actor 的线程安全 Swift 数据持久化（新增）
+|   |-- swift-protocol-di-testing/   # 基于 Protocol 的依赖注入用于可测试 Swift 代码（新增）
+|   |-- search-first/               # 先研究再编码的工作流（新增）
+|   |-- skill-stocktake/            # 审计技能和命令质量（新增）
+|   |-- liquid-glass-design/         # iOS 26 Liquid Glass 设计系统（新增）
+|   |-- foundation-models-on-device/ # Apple 设备端 LLM（FoundationModels）（新增）
+|   |-- swift-concurrency-6-2/       # Swift 6.2 易用并发（新增）
+|   |-- perl-patterns/             # 现代 Perl 5.36+ 习惯用法与最佳实践（新增）
+|   |-- perl-security/             # Perl 安全模式、taint 模式与安全 I/O（新增）
+|   |-- perl-testing/              # 使用 Test2::V0、prove、Devel::Cover 的 Perl TDD（新增）
+|   |-- autonomous-loops/           # 自主循环模式：顺序流水线、PR 循环与 DAG 编排（新增）
+|   |-- plankton-code-quality/      # 使用 Plankton hooks 的编写阶段代码质量控制（新增）
 |
-|-- commands/         # 用于快速执行的 Slash 命令
+|-- commands/         # 快速执行的斜杠命令
 |   |-- tdd.md              # /tdd - 测试驱动开发
 |   |-- plan.md             # /plan - 实现规划
-|   |-- e2e.md              # /e2e - E2E 测试生成
-|   |-- code-review.md      # /code-review - 代码质量审查
+|   |-- e2e.md              # /e2e - 端到端测试生成
+|   |-- code-review.md      # /code-review - 质量审查
 |   |-- build-fix.md        # /build-fix - 修复构建错误
-|   |-- refactor-clean.md   # /refactor-clean - 删除无用代码
-|   |-- learn.md            # /learn - 在会话中提取模式 (Longform Guide)
-|   |-- learn-eval.md       # /learn-eval - 提取、评估并保存模式 (新增)
-|   |-- checkpoint.md       # /checkpoint - 保存验证状态 (Longform Guide)
-|   |-- verify.md           # /verify - 运行验证循环 (Longform Guide)
+|   |-- refactor-clean.md   # /refactor-clean - 无用代码清理
+|   |-- learn.md            # /learn - 会话中提取模式（长文指南）
+|   |-- learn-eval.md       # /learn-eval - 提取、评估并保存模式（新增）
+|   |-- checkpoint.md       # /checkpoint - 保存验证状态（长文指南）
+|   |-- verify.md           # /verify - 运行验证循环（长文指南）
 |   |-- setup-pm.md         # /setup-pm - 配置包管理器
-|   |-- go-review.md        # /go-review - Go 代码审查 (新增)
-|   |-- go-test.md          # /go-test - Go TDD 工作流 (新增)
-|   |-- go-build.md         # /go-build - 修复 Go 构建错误 (新增)
-|   |-- skill-create.md     # /skill-create - 从 git 历史生成技能 (新增)
-|   |-- instinct-status.md  # /instinct-status - 查看学习到的直觉规则 (新增)
-|   |-- instinct-import.md  # /instinct-import - 导入直觉规则 (新增)
-|   |-- instinct-export.md  # /instinct-export - 导出直觉规则 (新增)
+|   |-- go-review.md        # /go-review - Go 代码审查（新增）
+|   |-- go-test.md          # /go-test - Go TDD 工作流（新增）
+|   |-- go-build.md         # /go-build - 修复 Go 构建错误（新增）
+|   |-- skill-create.md     # /skill-create - 从 git 历史生成技能（新增）
+|   |-- instinct-status.md  # /instinct-status - 查看学习到的直觉（新增）
+|   |-- instinct-import.md  # /instinct-import - 导入直觉（新增）
+|   |-- instinct-export.md  # /instinct-export - 导出直觉（新增）
 |   |-- evolve.md           # /evolve - 将直觉聚类为技能
-|   |-- pm2.md              # /pm2 - PM2 服务生命周期管理 (新增)
-|   |-- multi-plan.md       # /multi-plan - 多代理任务拆解 (新增)
-|   |-- multi-execute.md    # /multi-execute - 编排式多代理工作流 (新增)
-|   |-- multi-backend.md    # /multi-backend - 后端多服务编排 (新增)
-|   |-- multi-frontend.md   # /multi-frontend - 前端多服务编排 (新增)
-|   |-- multi-workflow.md   # /multi-workflow - 通用多服务工作流 (新增)
+|   |-- pm2.md              # /pm2 - PM2 服务生命周期管理（新增）
+|   |-- multi-plan.md       # /multi-plan - 多代理任务拆解（新增）
+|   |-- multi-execute.md    # /multi-execute - 编排的多代理工作流（新增）
+|   |-- multi-backend.md    # /multi-backend - 后端多服务编排（新增）
+|   |-- multi-frontend.md   # /multi-frontend - 前端多服务编排（新增）
+|   |-- multi-workflow.md   # /multi-workflow - 通用多服务工作流（新增）
 |   |-- orchestrate.md      # /orchestrate - 多代理协调
 |   |-- sessions.md         # /sessions - 会话历史管理
-|   |-- eval.md             # /eval - 按标准进行评估
+|   |-- eval.md             # /eval - 按标准评估
 |   |-- test-coverage.md    # /test-coverage - 测试覆盖率分析
 |   |-- update-docs.md      # /update-docs - 更新文档
-|   |-- update-codemaps.md  # /update-codemaps - 更新代码地图
-|   |-- python-review.md    # /python-review - Python 代码审查 (新增)
+|   |-- update-codemaps.md  # /update-codemaps - 更新代码映射
+|   |-- python-review.md    # /python-review - Python 代码审查（新增）
 |
-|-- rules/            # 必须遵循的规则 (复制到 ~/.claude/rules/)
-|   |-- README.md            # 结构概览和安装指南
+|-- rules/            # 必须遵循的规则（复制到 ~/.claude/rules/）
+|   |-- README.md            # 结构说明与安装指南
 |   |-- common/              # 与语言无关的原则
-|   |   |-- coding-style.md    # 不可变性、文件组织
-|   |   |-- git-workflow.md    # 提交格式、PR 流程
-|   |   |-- testing.md         # TDD、80% 覆盖率要求
-|   |   |-- performance.md     # 模型选择、上下文管理
-|   |   |-- patterns.md        # 设计模式、骨架项目
-|   |   |-- hooks.md           # Hook 架构、TodoWrite
-|   |   |-- agents.md          # 何时委派给子代理
-|   |   |-- security.md        # 必须执行的安全检查
-|   |-- typescript/          # TypeScript / JavaScript 专用
+|   |   |-- coding-style.md    # 不可变性与文件组织
+|   |   |-- git-workflow.md    # 提交格式与 PR 流程
+|   |   |-- testing.md         # TDD 与 80% 覆盖率要求
+|   |   |-- performance.md     # 模型选择与上下文管理
+|   |   |-- patterns.md        # 设计模式与骨架项目
+|   |   |-- hooks.md           # Hook 架构与 TodoWrite
+|   |   |-- agents.md          # 何时委托给子代理
+|   |   |-- security.md        # 强制安全检查
+|   |-- typescript/          # TypeScript/JavaScript 专用
 |   |-- python/              # Python 专用
 |   |-- golang/              # Go 专用
+|   |-- swift/               # Swift 专用
+|   |-- php/                 # PHP 专用（新增）
 |
 |-- hooks/            # 基于触发器的自动化
-|   |-- README.md                 # Hook 文档、示例和自定义指南
-|   |-- hooks.json                # 所有 Hook 配置 (PreToolUse、PostToolUse、Stop 等)
-|   |-- memory-persistence/       # 会话生命周期 Hook (Longform Guide)
-|   |-- strategic-compact/        # 压缩建议 (Longform Guide)
+|   |-- README.md                 # Hook 文档、示例与自定义指南
+|   |-- hooks.json                # 所有 Hook 配置（PreToolUse、PostToolUse、Stop 等）
+|   |-- memory-persistence/       # 会话生命周期 Hook（长文指南）
+|   |-- strategic-compact/        # 压缩建议（长文指南）
 |
-|-- scripts/          # 跨平台 Node.js 脚本 (新增)
-|   |-- lib/                     # 共享工具
-|   |   |-- utils.js             # 跨平台文件 / 路径 / 系统工具
+|-- scripts/          # 跨平台 Node.js 脚本（新增）
+|   |-- lib/                     # 公共工具
+|   |   |-- utils.js             # 跨平台文件/路径/系统工具
 |   |   |-- package-manager.js   # 包管理器检测与选择
 |   |-- hooks/                   # Hook 实现
 |   |   |-- session-start.js     # 会话开始时加载上下文
@@ -398,28 +387,28 @@ everything-claude-code/
 |   |   |-- evaluate-session.js  # 从会话中提取模式
 |   |-- setup-package-manager.js # 交互式包管理器设置
 |
-|-- tests/            # 测试套件 (新增)
+|-- tests/            # 测试套件（新增）
 |   |-- lib/                     # 库测试
 |   |-- hooks/                   # Hook 测试
 |   |-- run-all.js               # 运行所有测试
 |
-|-- contexts/         # 动态系统提示上下文注入 (Longform Guide)
+|-- contexts/         # 动态系统提示上下文（长文指南）
 |   |-- dev.md              # 开发模式上下文
 |   |-- review.md           # 代码审查模式上下文
-|   |-- research.md         # 研究 / 探索模式上下文
+|   |-- research.md         # 研究/探索模式上下文
 |
-|-- examples/         # 示例配置和会话
+|-- examples/         # 示例配置与会话
 |   |-- CLAUDE.md             # 项目级配置示例
 |   |-- user-CLAUDE.md        # 用户级配置示例
-|   |-- saas-nextjs-CLAUDE.md   # 真实 SaaS 示例 (Next.js + Supabase + Stripe)
-|   |-- go-microservice-CLAUDE.md # 真实 Go 微服务示例 (gRPC + PostgreSQL)
-|   |-- django-api-CLAUDE.md      # 真实 Django REST API 示例 (DRF + Celery)
-|   |-- rust-api-CLAUDE.md        # 真实 Rust API 示例 (Axum + SQLx + PostgreSQL) (新增)
+|   |-- saas-nextjs-CLAUDE.md   # 实际 SaaS 示例（Next.js + Supabase + Stripe）
+|   |-- go-microservice-CLAUDE.md # 实际 Go 微服务示例（gRPC + PostgreSQL）
+|   |-- django-api-CLAUDE.md      # 实际 Django REST API 示例（DRF + Celery）
+|   |-- rust-api-CLAUDE.md        # 实际 Rust API 示例（Axum + SQLx + PostgreSQL）（新增）
 |
 |-- mcp-configs/      # MCP 服务器配置
 |   |-- mcp-servers.json    # GitHub、Supabase、Vercel、Railway 等
 |
-|-- marketplace.json  # 自托管市场配置 (用于 /plugin marketplace add)
+|-- marketplace.json  # 自托管市场配置（用于 /plugin marketplace add）
 ```
 
 ***
@@ -571,23 +560,24 @@ Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded fil
 
 这将使您能够立即访问所有命令、代理、技能和钩子。
 
-> **注意：** Claude Code 插件系统不支持通过插件分发 `rules`（[上游限制](https://code.claude.com/docs/en/plugins-reference)）。你需要手动安装规则：
+> **注意：** Claude Code 插件系统不支持通过插件分发 `rules` ([上游限制](https://code.claude.com/docs/en/plugins-reference))。您需要手动安装规则：
 >
 > ```bash
 > # 首先克隆仓库
 > git clone https://github.com/affaan-m/everything-claude-code.git
 >
-> # 选项 A：用户级规则（应用于所有项目）
+> # 选项 A：用户级规则（适用于所有项目）
 > mkdir -p ~/.claude/rules
 > cp -r everything-claude-code/rules/common/* ~/.claude/rules/
-> cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择你的技术栈
+> cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # 选择您的技术栈
 > cp -r everything-claude-code/rules/python/* ~/.claude/rules/
 > cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
+> cp -r everything-claude-code/rules/php/* ~/.claude/rules/
 >
-> # 选项 B：项目级规则（仅应用于当前项目）
+> # 选项 B：项目级规则（仅适用于当前项目）
 > mkdir -p .claude/rules
 > cp -r everything-claude-code/rules/common/* .claude/rules/
-> cp -r everything-claude-code/rules/typescript/* .claude/rules/     # 选择你的技术栈
+> cp -r everything-claude-code/rules/typescript/* .claude/rules/     # 选择您的技术栈
 > ```
 
 ***
@@ -608,6 +598,7 @@ cp -r everything-claude-code/rules/common/* ~/.claude/rules/
 cp -r everything-claude-code/rules/typescript/* ~/.claude/rules/   # pick your stack
 cp -r everything-claude-code/rules/python/* ~/.claude/rules/
 cp -r everything-claude-code/rules/golang/* ~/.claude/rules/
+cp -r everything-claude-code/rules/php/* ~/.claude/rules/
 
 # Copy commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
@@ -691,6 +682,8 @@ rules/
   typescript/      # TS/JS specific patterns and tools
   python/          # Python specific patterns and tools
   golang/          # Go specific patterns and tools
+  swift/           # Swift specific patterns and tools
+  php/             # PHP specific patterns and tools
 ```
 
 有关安装和结构详情，请参阅 [`rules/README.md`](rules/README.md)。
@@ -748,7 +741,7 @@ rules/
 ## ❓ 常见问题
 
 <details>
-<summary><b>How do I check which agents/commands are installed?</b></summary>
+<summary><b>如何检查已安装的代理/命令？</b></summary>
 
 ```bash
 /plugin list everything-claude-code@everything-claude-code
@@ -759,14 +752,40 @@ rules/
 </details>
 
 <details>
-<summary><b>My hooks aren't working / I see "Duplicate hooks file" errors</b></summary>
+<summary><b>我的钩子不工作 / 我看到“重复钩子文件”错误</b></summary>
 
 这是最常见的问题。**不要在 `.claude-plugin/plugin.json` 中添加 `"hooks"` 字段。** Claude Code v2.1+ 会自动从已安装的插件加载 `hooks/hooks.json`。显式声明它会导致重复检测错误。参见 [#29](https://github.com/affaan-m/everything-claude-code/issues/29), [#52](https://github.com/affaan-m/everything-claude-code/issues/52), [#103](https://github.com/affaan-m/everything-claude-code/issues/103)。
 
 </details>
 
 <details>
-<summary><b>My context window is shrinking / Claude is running out of context</b></summary>
+<summary><b>我能否在自定义API端点或模型网关上使用ECC与Claude Code？</b></summary>
+
+是的。ECC 不会硬编码 Anthropic 托管的传输设置。它通过 Claude Code 正常的 CLI/插件接口在本地运行，因此可以与以下系统配合工作：
+
+* Anthropic 托管的 Claude Code
+* 使用 `ANTHROPIC_BASE_URL` 和 `ANTHROPIC_AUTH_TOKEN` 的官方 Claude Code 网关设置
+* 兼容的自定义端点，这些端点能理解 Anthropic API 并符合 Claude Code 的预期
+
+最小示例：
+
+```bash
+export ANTHROPIC_BASE_URL=https://your-gateway.example.com
+export ANTHROPIC_AUTH_TOKEN=your-token
+claude
+```
+
+如果您的网关重新映射模型名称，请在 Claude Code 中配置，而不是在 ECC 中。一旦 `claude` CLI 已经正常工作，ECC 的钩子、技能、命令和规则就与模型提供商无关。
+
+官方参考资料：
+
+* [Claude Code LLM 网关文档](https://docs.anthropic.com/en/docs/claude-code/llm-gateway)
+* [Claude Code 模型配置文档](https://docs.anthropic.com/en/docs/claude-code/model-config)
+
+</details>
+
+<details>
+<summary><b>我的上下文窗口正在缩小 / Claude 即将耗尽上下文</b></summary>
 
 太多的 MCP 服务器会消耗你的上下文。每个 MCP 工具描述都会消耗你 200k 窗口的令牌，可能将其减少到约 70k。
 
@@ -784,7 +803,7 @@ rules/
 </details>
 
 <details>
-<summary><b>Can I use only some components (e.g., just agents)?</b></summary>
+<summary><b>我可以只使用某些组件（例如，仅代理）吗？</b></summary>
 
 是的。使用选项 2（手动安装）并仅复制你需要的部分：
 
@@ -801,7 +820,7 @@ cp -r everything-claude-code/rules/common/* ~/.claude/rules/
 </details>
 
 <details>
-<summary><b>Does this work with Cursor / OpenCode / Codex / Antigravity?</b></summary>
+<summary><b>这能与 Cursor / OpenCode / Codex / Antigravity 一起使用吗？</b></summary>
 
 是的。ECC 是跨平台的：
 
@@ -814,7 +833,7 @@ cp -r everything-claude-code/rules/common/* ~/.claude/rules/
 </details>
 
 <details>
-<summary><b>How do I contribute a new skill or agent?</b></summary>
+<summary><b>我如何贡献新技能或代理？</b></summary>
 
 参见 [CONTRIBUTING.md](CONTRIBUTING.md)。简短版本：
 
@@ -858,11 +877,11 @@ node tests/hooks/hooks.test.js
 
 ### 贡献想法
 
-* 特定语言技能 (Rust, C#, Swift, Kotlin) — Go, Python, Java 已包含
-* 特定框架配置 (Rails, Laravel, FastAPI, NestJS) — Django, Spring Boot 已包含
-* DevOps 智能体 (Kubernetes, Terraform, AWS, Docker)
-* 测试策略 (不同框架，视觉回归)
-* 领域特定知识 (ML, 数据工程, 移动端)
+* 特定语言技能（Rust, C#, Kotlin, Java）—— Go, Python, Perl, Swift 和 TypeScript 已包含在内
+* 特定框架配置（Rails, Laravel, FastAPI, NestJS）—— Django, Spring Boot 已包含在内
+* DevOps 代理（Kubernetes, Terraform, AWS, Docker）
+* 测试策略（不同框架，视觉回归）
+* 特定领域知识（ML，数据工程，移动端）
 
 ***
 
@@ -875,18 +894,18 @@ ECC 提供**完整的 Cursor IDE 支持**，包括为 Cursor 原生格式适配�
 ```bash
 # Install for your language(s)
 ./install.sh --target cursor typescript
-./install.sh --target cursor python golang swift
+./install.sh --target cursor python golang swift php
 ```
 
 ### 包含内容
 
 | 组件 | 数量 | 详情 |
 |-----------|-------|---------|
-| 钩子事件 | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt, 以及另外 10 个 |
-| 钩子脚本 | 16 | 通过共享适配器委托给 `scripts/hooks/` 的轻量 Node.js 脚本 |
-| 规则 | 29 | 9 条通用规则 (alwaysApply) + 20 条语言特定规则 (TypeScript, Python, Go, Swift) |
-| 代理 | 共享 | 通过根目录下的 AGENTS.md（被 Cursor 原生读取） |
-| 技能 | 共享 + 捆绑 | 通过根目录下的 AGENTS.md 和用于翻译补充的 `.cursor/skills/` |
+| 钩子事件 | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt 等 10 多个 |
+| 钩子脚本 | 16 | 通过共享适配器委托给 `scripts/hooks/` 的精简 Node.js 脚本 |
+| 规则 | 34 | 9 个通用规则（alwaysApply）+ 25 个语言特定规则（TypeScript, Python, Go, Swift, PHP） |
+| 代理 | 共享 | 通过根目录下的 AGENTS.md（由 Cursor 原生读取） |
+| 技能 | 共享 + 捆绑 | 通过根目录下的 AGENTS.md 和 `.cursor/skills/` 用于翻译后的补充内容 |
 | 命令 | 共享 | `.cursor/commands/`（如果已安装） |
 | MCP 配置 | 共享 | `.cursor/mcp.json`（如果已安装） |
 
@@ -928,28 +947,31 @@ ECC 为 macOS 应用和 CLI 提供 **一流的 Codex 支持**，包括参考配�
 ### 快速开始（Codex 应用 + CLI）
 
 ```bash
-# Copy the reference config to your home directory
-cp .codex/config.toml ~/.codex/config.toml
-
-# Run Codex CLI in the repo — AGENTS.md is auto-detected
+# Run Codex CLI in the repo — AGENTS.md and .codex/ are auto-detected
 codex
+
+# Optional: copy the global-safe defaults to your home directory
+cp .codex/config.toml ~/.codex/config.toml
 ```
 
 Codex macOS 应用：
 
-* 将此仓库作为您的工作区打开。
-* 根目录的 `AGENTS.md` 会被自动检测。
-* 可选：将 `.codex/config.toml` 复制到 `~/.codex/config.toml` 以实现 CLI/应用行为一致性。
+* 将此仓库作为您的工作空间打开。
+* 根目录 `AGENTS.md` 会自动检测。
+* `.codex/config.toml` 和 `.codex/agents/*.toml` 在保持项目本地时效果最佳。
+* 参考文件 `.codex/config.toml` 有意未固定 `model` 或 `model_provider`，因此除非您手动覆盖，Codex 将使用其自身的当前默认版本。
+* 可选：将 `.codex/config.toml` 复制到 `~/.codex/config.toml` 以设置全局默认值；除非您也复制 `.codex/agents/`，否则请将多智能体角色文件保留在项目本地。
 
 ### 包含内容
 
 | 组件 | 数量 | 详情 |
 |-----------|-------|---------|
-| 配置 | 1 | `.codex/config.toml` — 模型、权限、MCP 服务器、持久指令 |
+| 配置 | 1 | `.codex/config.toml` —— 顶级 approvals/sandbox/web\_search, MCP 服务器，通知，配置文件 |
 | AGENTS.md | 2 | 根目录（通用）+ `.codex/AGENTS.md`（Codex 特定补充） |
-| 技能 | 16 | `.agents/skills/` — 每个技能包含 SKILL.md + agents/openai.yaml |
-| MCP 服务器 | 4 | GitHub、Context7、Memory、Sequential Thinking（基于命令） |
+| 技能 | 16 | `.agents/skills/` —— SKILL.md + agents/openai.yaml 每个技能 |
+| MCP 服务器 | 4 | GitHub, Context7, Memory, Sequential Thinking（基于命令） |
 | 配置文件 | 2 | `strict`（只读沙箱）和 `yolo`（完全自动批准） |
+| 代理角色 | 3 | `.codex/agents/` —— explorer, reviewer, docs-researcher |
 
 ### 技能
 
@@ -976,7 +998,24 @@ Codex macOS 应用：
 
 ### 关键限制
 
-Codex **尚未提供 Claude 风格的钩子执行对等性**。ECC 在该平台上的强制执行是通过 `AGENTS.md` 和 `persistent_instructions` 基于指令实现的，外加沙箱权限。
+Codex **尚未提供与 Claude 风格同等的钩子执行功能**。ECC 在该平台上的强制执行是通过 `AGENTS.md`、可选的 `model_instructions_file` 覆盖以及沙箱/批准设置以指令方式实现的。
+
+### 多代理支持
+
+当前的 Codex 版本支持实验性的多代理工作流。
+
+* 在 `.codex/config.toml` 中启用 `features.multi_agent = true`
+* 在 `[agents.<name>]` 下定义角色
+* 将每个角色指向 `.codex/agents/` 下的一个文件
+* 在 CLI 中使用 `/agent` 来检查或引导子代理
+
+ECC 附带了三个示例角色配置：
+
+| 角色 | 目的 |
+|------|---------|
+| `explorer` | 在进行编辑前进行只读的代码库证据收集 |
+| `reviewer` | 正确性、安全性和缺失测试的审查 |
+| `docs_researcher` | 在发布/文档更改前进行文档和 API 验证 |
 
 ***
 
@@ -1089,6 +1128,14 @@ npm install ecc-universal
 }
 ```
 
+该 npm 插件条目启用了 ECC 发布的 OpenCode 插件模块（钩子/事件和插件工具）。
+它**不会**自动将 ECC 的完整命令/代理/指令目录添加到您的项目配置中。
+
+要获得完整的 ECC OpenCode 设置，您可以：
+
+* 在此仓库内运行 OpenCode，或者
+* 将捆绑的 `.opencode/` 配置资源复制到您的项目中，并在 `opencode.json` 中连接 `instructions`、`agent` 和 `command` 条目
+
 ### 文档
 
 * **迁移指南**：`.opencode/MIGRATION.md`
@@ -1104,26 +1151,26 @@ ECC 是**第一个最大化利用每个主要 AI 编码工具的插件**。以�
 
 | 功能 | Claude Code | Cursor IDE | Codex CLI | OpenCode |
 |---------|------------|------------|-----------|----------|
-| **智能体** | 16 | 共享（AGENTS.md） | 共享（AGENTS.md） | 12 |
+| **代理** | 16 | 共享（AGENTS.md） | 共享（AGENTS.md） | 12 |
 | **命令** | 40 | 共享 | 基于指令 | 31 |
 | **技能** | 65 | 共享 | 10（原生格式） | 37 |
 | **钩子事件** | 8 种类型 | 15 种类型 | 暂无 | 11 种类型 |
-| **钩子脚本** | 20+ 个脚本 | 16 个脚本（DRY 适配器） | 不适用 | 插件钩子 |
-| **规则** | 29（通用 + 语言） | 29（YAML 前言） | 基于指令 | 13 条指令 |
-| **自定义工具** | 通过钩子 | 通过钩子 | 不适用 | 6 个原生工具 |
-| **MCP 服务器** | 14 | 共享（mcp.json） | 4（基于命令） | 完整 |
+| **钩子脚本** | 20+ 脚本 | 16 个脚本（DRY 适配器） | N/A | 插件钩子 |
+| **规则** | 34（通用 + 语言） | 34（YAML 前言） | 基于指令 | 13 条指令 |
+| **自定义工具** | 通过钩子 | 通过钩子 | N/A | 6 个原生工具 |
+| **MCP 服务器** | 14 | 共享（mcp.json） | 4（基于命令） | 完整支持 |
 | **配置格式** | settings.json | hooks.json + rules/ | config.toml | opencode.json |
 | **上下文文件** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
 | **秘密检测** | 基于钩子 | beforeSubmitPrompt 钩子 | 基于沙箱 | 基于钩子 |
-| **自动格式化** | PostToolUse 钩子 | afterFileEdit 钩子 | 不适用 | file.edited 钩子 |
+| **自动格式化** | PostToolUse 钩子 | afterFileEdit 钩子 | N/A | file.edited 钩子 |
 | **版本** | 插件 | 插件 | 参考配置 | 1.8.0 |
 
 **关键架构决策：**
 
-* 根目录下的 **AGENTS.md** 是通用的跨工具文件（被所有 4 个工具读取）
+* **AGENTS.md** 在根目录是通用的跨工具文件（所有 4 个工具都能读取）
 * **DRY 适配器模式** 让 Cursor 可以重用 Claude Code 的钩子脚本而无需重复
-* **技能格式**（带有 YAML 前言的 SKILL.md）在 Claude Code、Codex 和 OpenCode 上都能工作
-* Codex 缺乏钩子的问题通过 `persistent_instructions` 和沙箱权限来弥补
+* **技能格式**（带有 YAML 前言的 SKILL.md）在 Claude Code、Codex 和 OpenCode 中都能工作
+* Codex 缺少钩子功能，通过 `AGENTS.md`、可选的 `model_instructions_file` 覆盖以及沙箱权限来弥补
 
 ***
 

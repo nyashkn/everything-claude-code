@@ -2,11 +2,16 @@
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
 
-# API keys
+# API keys and secrets
 *.key
 *.pem
 secrets.json
+config/secrets.yml
+.secrets
 
 # MCP configs with credentials
 mcp-configs/mcp-servers.with_creds.json
@@ -14,7 +19,13 @@ mcp-configs/*.with_creds.json
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
 # Backup files created by install scripts
 *.backup-*
@@ -24,12 +35,35 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
 # Node
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.yarn/
+lerna-debug.log*
 
-# Build output
+# Build outputs
 dist/
+build/
+*.tsbuildinfo
+.cache/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
 
 # Python
 __pycache__/
@@ -48,11 +82,23 @@ examples/sessions/*.tmp
 
 # Local drafts
 marketing/
+.dmux/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.backup
+
+# Bootstrap pipeline outputs
+# Generated lock files in tool subdirectories
+.opencode/package-lock.json
+.opencode/node_modules/
 
 # Per-machine session state (keep in ~/.claude/, not in repo)
 sessions/
-.tmp/
-*.log
 
 # External skills — installed at runtime via scripts/install-external-skills.js
 # These are machine-specific symlinks pointing to .skills-cache/; never commit them.
